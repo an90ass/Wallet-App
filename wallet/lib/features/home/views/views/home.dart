@@ -31,9 +31,10 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Center(
-          child: _widgetOptions.elementAt(_selectedIndex),
-        ),
+      extendBody: true,
+        body: 
+         _widgetOptions.elementAt(_selectedIndex),
+        
         bottomNavigationBar: Padding(
           padding: EdgeInsets.symmetric(horizontal: context.dynamicWidth(0.05)),
           child: BottomAppBar(

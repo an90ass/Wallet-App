@@ -1,7 +1,11 @@
 // import 'package:flutter/material.dart';
 
+// import 'dart:js';
+
 import 'package:flutter/material.dart';
 import 'package:wallet/features/auth/views/sign_up.dart';
+import 'package:wallet/features/card/views/card_detail.dart';
+import 'package:wallet/features/card/views/add_card.dart';
 import 'package:wallet/features/home/views/views/home.dart';
 import '../../features/auth/views/sign_in.dart';
 import 'route_name.dart';
@@ -17,8 +21,12 @@ class AppRouter{
           return MaterialPageRoute(builder: (context)=> Home());
       case RouteNames.signUp:
           return MaterialPageRoute(builder: (context)=> SignUp());
-
-       default:
+      case RouteNames.addCard:
+      return MaterialPageRoute(builder: (context)=>AddCard());
+      case RouteNames.cardDetail:
+      return MaterialPageRoute(builder: (context)=>CardDetail());
+      
+      default:
         return MaterialPageRoute(builder: (_) =>  SignIn());
     }
       

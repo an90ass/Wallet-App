@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wallet/config/extensions/context_extension.dart';
 import 'package:wallet/config/items/app_colors.dart';
+import 'package:wallet/config/routes/route_name.dart';
 import 'package:wallet/config/utility/enums/image_enum.dart';
 
 class Wallet extends StatelessWidget {
@@ -28,44 +29,103 @@ class Wallet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SafeArea(
-      bottom: false,
-      child: Padding(
-          padding: context.paddingAllDefault,
-          child: Column(
-            children: [
-              Padding(
-                padding: context.paddingVerticalDefault,
-                child: Row(
+      body: SafeArea(
+        bottom: false,
+        child: Padding(
+            padding: context.paddingAllDefault,
+            child: Column(
+              children: [
+                Padding(
+                  padding: context.paddingVerticalDefault,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      buildTiteleAndSubTitel(context),
+                      buildAvatar(context)
+                    ],
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => Navigator.pushNamed(context, RouteNames.cardDetail),
+                  child: Card(
+                    elevation: 5,
+                    color: AppColors.containerColor,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50)),
+                    child: builCardInfo(context),
+                  ),
+                ),
+                Padding(
+                  padding: context.paddingVerticalDefault,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: quickMenuItems.map((item) {
+                      return QuickMenuItem(
+                        title: item['title']!,
+                        svgPath: item['svgPath']!,
+                      );
+                    }).toList(),
+                  ),
+                ),
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    buildTiteleAndSubTitel(context),
-                    buildAvatar(context)
+                    Text(
+                      "Last Transfer",
+                      style: context.textTheme.titleMedium?.copyWith(
+                          color: AppColors.titleColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: context.dynamicHeight(0.027)),
+                    ),
+                    TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        "See All",
+                        style: context.textTheme.bodyMedium?.copyWith(
+                            color: AppColors.lightPurpleColor,
+                            fontSize: context.dynamicHeight(0.027)),
+                      ),
+                    ),
                   ],
                 ),
-              ),
-              Card(
-                elevation: 5,
-                color: AppColors.containerColor,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50)),
-                child: builCardInfo(context),
-              ),
-              Padding(
-                padding: context.paddingVerticalDefault,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: quickMenuItems.map((item) {
-                    return QuickMenuItem(
-                      title: item['title']!,
-                      svgPath: item['svgPath']!,
-                    );
-                  }).toList(),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: 20,
+                    itemBuilder: (BuildContext context, int index) {
+                      return ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(
+                          "Payment",
+                          style: context.textTheme.labelMedium?.copyWith(
+                              color: AppColors.blackColor,
+                              fontSize: context.dynamicHeight(0.023),
+                              fontWeight: FontWeight.w400),
+                        ),
+                        subtitle: Text(
+                          "Payment Description",
+                          style: context.textTheme.bodyMedium?.copyWith(
+                              color: AppColors.subtitleColor,
+                              fontSize: context.dynamicHeight(0.02),
+                              fontWeight: FontWeight.w400),
+                        ),
+                        trailing: Text(
+                          "\$ 12",
+                          style: context.textTheme.labelMedium?.copyWith(
+                              color: AppColors.darkBlueColor,
+                              fontSize: context.dynamicHeight(0.02),
+                              fontWeight: FontWeight.w400),
+                        ),
+                        leading: CircleAvatar(
+                          radius: context.dynamicWidth(0.08),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              )
-            ],
-          )),
-    ));
+              ],
+            )),
+      ),
+    );
   }
 
   Column buildTiteleAndSubTitel(BuildContext context) {
@@ -80,7 +140,7 @@ class Wallet extends StatelessWidget {
               fontSize: context.dynamicHeight(0.035)),
         ),
         Text(
-          "Wallet",
+          "Active",
           style: context.textTheme.bodyMedium?.copyWith(
               color: AppColors.subtitleColor,
               fontSize: context.dynamicHeight(0.035)),
@@ -170,7 +230,7 @@ class QuickMenuItem extends StatelessWidget {
         Padding(
           padding: context.paddingTopLow,
           child: Text(
-            title, // استخدام العنوان
+            title,
             style: context.textTheme.labelMedium?.copyWith(
               color: AppColors.extraLightPurple,
               fontSize: context.dynamicWidth(0.02),
