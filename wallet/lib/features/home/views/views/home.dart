@@ -4,6 +4,7 @@ import 'package:wallet/config/extensions/context_extension.dart';
 import 'package:wallet/config/items/app_colors.dart';
 import 'package:wallet/config/utility/enums/image_enum.dart';
 import 'package:wallet/features/wallet/views/wallet.dart';
+import 'package:wallet/stats/views/stats.dart';
 
 class Home extends StatefulWidget {
   State<StatefulWidget> createState() {
@@ -14,17 +15,17 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   List<Widget> _widgetOptions = <Widget>[
     Wallet(),
-    Text(
-      '1',
-      style: TextStyle(color: Colors.red),
-    ),
+    Stats(),
     Text('2'),
     const Text('3'),
   ];
+
   int _selectedIndex = 0;
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      print('Selected Index: $_selectedIndex');
+
     });
   }
 

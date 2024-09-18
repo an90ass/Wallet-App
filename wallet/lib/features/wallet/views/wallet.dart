@@ -71,7 +71,7 @@ class Wallet extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Last Transfer",
+                      "Last Transaction",
                       style: context.textTheme.titleMedium?.copyWith(
                           color: AppColors.titleColor,
                           fontWeight: FontWeight.bold,
@@ -117,7 +117,8 @@ class Wallet extends StatelessWidget {
                         ),
                         leading: CircleAvatar(
                           radius: context.dynamicWidth(0.08),
-                        ),
+                              backgroundImage: AssetImage(ImageEnum.profilePicture.imagePath),
+),
                       );
                     },
                   ),
@@ -143,7 +144,7 @@ class Wallet extends StatelessWidget {
           "Active",
           style: context.textTheme.bodyMedium?.copyWith(
               color: AppColors.subtitleColor,
-              fontSize: context.dynamicHeight(0.035)),
+              fontSize: context.dynamicHeight(0.025)),
         ),
       ],
     );
@@ -152,6 +153,8 @@ class Wallet extends StatelessWidget {
   CircleAvatar buildAvatar(BuildContext context) {
     return CircleAvatar(
       radius: context.dynamicWidth(0.08),
+            backgroundImage: AssetImage(ImageEnum.profilePicture.imagePath),
+
     );
   }
 
