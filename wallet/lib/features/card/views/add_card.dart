@@ -6,48 +6,51 @@ import 'package:wallet/config/utility/enums/image_enum.dart';
 class AddCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back_ios_new_outlined,
-              color: AppColors.containerColor,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
+    return Scaffold(appBar: buildAppBar(context), body: buildBody(context));
+  }
+
+  PreferredSizeWidget buildAppBar(BuildContext context) {
+    return AppBar(
+      leading: IconButton(
+        icon: const Icon(
+          Icons.arrow_back_ios_new_outlined,
+          color: AppColors.containerColor,
         ),
-        body: SafeArea(
-          child: Container(
-            alignment: Alignment.center,
-            padding:context.paddingAllDefault, 
-          
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Text(
-                      "Add Card",
-                      style: context.textTheme.headlineMedium?.copyWith(
-                          color: AppColors.titleColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: context.dynamicHeight(0.035)),
-                    ),
-                    Image.asset(ImageEnum.verticalCard.imagePath),
-                    Container(
-                      width: context.dynamicWidth(0.6),
-                      child: Text(
-                        "Add a new card on your wallet for easy life",
-                        style: context.textTheme.labelMedium?.copyWith(
-                            color: AppColors.blackColor,
-                            fontSize: context.dynamicHeight(0.023),
-                            fontWeight: FontWeight.w400),
-                            textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ]),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+
+  Widget buildBody(BuildContext context) {
+    return SafeArea(
+      child: Container(
+        alignment: Alignment.center,
+        padding: context.paddingAllDefault,
+        child:
+            Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+          Text(
+            "Add Card",
+            style: context.textTheme.headlineMedium?.copyWith(
+                color: AppColors.titleColor,
+                fontWeight: FontWeight.bold,
+                fontSize: context.dynamicHeight(0.035)),
+          ),
+          Image.asset(ImageEnum.verticalCard.imagePath),
+          Container(
+            width: context.dynamicWidth(0.6),
+            child: Text(
+              "Add a new card on your wallet for easy life",
+              style: context.textTheme.labelMedium?.copyWith(
+                  color: AppColors.blackColor,
+                  fontSize: context.dynamicHeight(0.023),
+                  fontWeight: FontWeight.w400),
+              textAlign: TextAlign.center,
             ),
-          
-        ));
+          ),
+        ]),
+      ),
+    );
   }
 }

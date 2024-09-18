@@ -46,7 +46,8 @@ class Wallet extends StatelessWidget {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () => Navigator.pushNamed(context, RouteNames.cardDetail),
+                  onTap: () =>
+                      Navigator.pushNamed(context, RouteNames.cardDetail),
                   child: Card(
                     elevation: 5,
                     color: AppColors.containerColor,
@@ -63,6 +64,12 @@ class Wallet extends StatelessWidget {
                       return QuickMenuItem(
                         title: item['title']!,
                         svgPath: item['svgPath']!,
+                        onTap: item['title'] == "Top Up"
+                            ? () {
+                                Navigator.pushNamed(
+                                    context, RouteNames.addTransaction);
+                              }
+                            : null,
                       );
                     }).toList(),
                   ),
@@ -117,8 +124,9 @@ class Wallet extends StatelessWidget {
                         ),
                         leading: CircleAvatar(
                           radius: context.dynamicWidth(0.08),
-                              backgroundImage: AssetImage(ImageEnum.profilePicture.imagePath),
-),
+                          backgroundImage:
+                              AssetImage(ImageEnum.profilePicture.imagePath),
+                        ),
                       );
                     },
                   ),
@@ -153,8 +161,7 @@ class Wallet extends StatelessWidget {
   CircleAvatar buildAvatar(BuildContext context) {
     return CircleAvatar(
       radius: context.dynamicWidth(0.08),
-            backgroundImage: AssetImage(ImageEnum.profilePicture.imagePath),
-
+      backgroundImage: AssetImage(ImageEnum.profilePicture.imagePath),
     );
   }
 
@@ -212,35 +219,36 @@ class Wallet extends StatelessWidget {
 class QuickMenuItem extends StatelessWidget {
   final String title;
   final String svgPath;
-  const QuickMenuItem({
-    super.key,
-    required this.svgPath,
-    required this.title,
-  });
+  final Function()? onTap;
+  const QuickMenuItem(
+      {super.key, required this.svgPath, required this.title, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Card(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          child: Padding(
-            padding: context.paddingAllLow,
-            child: SvgPicture.asset(svgPath),
-          ),
-        ),
-        Padding(
-          padding: context.paddingTopLow,
-          child: Text(
-            title,
-            style: context.textTheme.labelMedium?.copyWith(
-              color: AppColors.extraLightPurple,
-              fontSize: context.dynamicWidth(0.02),
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            child: Padding(
+              padding: context.paddingAllLow,
+              child: SvgPicture.asset(svgPath),
             ),
           ),
-        ),
-      ],
+          Padding(
+            padding: context.paddingTopLow,
+            child: Text(
+              title,
+              style: context.textTheme.labelMedium?.copyWith(
+                color: AppColors.extraLightPurple,
+                fontSize: context.dynamicWidth(0.02),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
