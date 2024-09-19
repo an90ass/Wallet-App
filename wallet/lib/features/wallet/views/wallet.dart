@@ -6,7 +6,6 @@ import 'package:wallet/config/extensions/context_extension.dart';
 import 'package:wallet/config/items/app_colors.dart';
 import 'package:wallet/config/routes/route_name.dart';
 import 'package:wallet/config/utility/enums/image_enum.dart';
-
 class Wallet extends StatelessWidget {
   final List<Map<String, String>> quickMenuItems = [
     {
@@ -18,123 +17,146 @@ class Wallet extends StatelessWidget {
       "svgPath": ImageEnum.payment.svgPath,
     },
     {
-      "title": "Payout",
+      "title": "Outgoing",
       "svgPath": ImageEnum.payout.svgPath,
     },
     {
-      "title": "Top Up",
+      "title": "InCome",
       "svgPath": ImageEnum.topup.svgPath,
     },
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         bottom: false,
         child: Padding(
-            padding: context.paddingAllDefault,
-            child: Column(
-              children: [
-                Padding(
-                  padding: context.paddingVerticalDefault,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      buildTiteleAndSubTitel(context),
-                      buildAvatar(context)
-                    ],
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () =>
-                      Navigator.pushNamed(context, RouteNames.cardDetail),
-                  child: Card(
-                    elevation: 5,
-                    color: AppColors.containerColor,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50)),
-                    child: builCardInfo(context),
-                  ),
-                ),
-                Padding(
-                  padding: context.paddingVerticalDefault,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: quickMenuItems.map((item) {
-                      return QuickMenuItem(
-                        title: item['title']!,
-                        svgPath: item['svgPath']!,
-                        onTap: item['title'] == "Top Up"
-                            ? () {
-                                Navigator.pushNamed(
-                                    context, RouteNames.addTransaction);
-                              }
-                            : null,
-                      );
-                    }).toList(),
-                  ),
-                ),
-                Row(
+          padding: context.paddingAllDefault,
+          child: Column(
+            children: [
+              Padding(
+                padding: context.paddingVerticalDefault,
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      "Last Transaction",
-                      style: context.textTheme.titleMedium?.copyWith(
-                          color: AppColors.titleColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: context.dynamicHeight(0.027)),
-                    ),
-                    TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        "See All",
-                        style: context.textTheme.bodyMedium?.copyWith(
-                            color: AppColors.lightPurpleColor,
-                            fontSize: context.dynamicHeight(0.027)),
-                      ),
-                    ),
+                    buildTiteleAndSubTitel(context),
+                    buildAvatar(context)
                   ],
                 ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: 20,
-                    itemBuilder: (BuildContext context, int index) {
-                      return ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text(
-                          "Payment",
-                          style: context.textTheme.labelMedium?.copyWith(
-                              color: AppColors.blackColor,
-                              fontSize: context.dynamicHeight(0.023),
-                              fontWeight: FontWeight.w400),
-                        ),
-                        subtitle: Text(
-                          "Payment Description",
-                          style: context.textTheme.bodyMedium?.copyWith(
-                              color: AppColors.subtitleColor,
-                              fontSize: context.dynamicHeight(0.02),
-                              fontWeight: FontWeight.w400),
-                        ),
-                        trailing: Text(
-                          "\$ 12",
-                          style: context.textTheme.labelMedium?.copyWith(
-                              color: AppColors.darkBlueColor,
-                              fontSize: context.dynamicHeight(0.02),
-                              fontWeight: FontWeight.w400),
-                        ),
-                        leading: CircleAvatar(
-                          radius: context.dynamicWidth(0.08),
-                          backgroundImage:
-                              AssetImage(ImageEnum.profilePicture.imagePath),
-                        ),
-                      );
-                    },
-                  ),
+              ),
+              GestureDetector(
+                onTap: () =>
+                    Navigator.pushNamed(context, RouteNames.cardDetail),
+                child: Card(
+                  elevation: 5,
+                  color: AppColors.containerColor,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50)),
+                  child: builCardInfo(context),
                 ),
-              ],
-            )),
+              ),
+              Padding(
+                padding: context.paddingVerticalDefault,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: quickMenuItems.map((item) {
+                    return QuickMenuItem(
+                      title: item['title']!,
+                      svgPath: item['svgPath']!,
+                      onTap: () {
+                        handleMenuItemTap(context, item['title']!);
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Last Transaction",
+                    style: context.textTheme.titleMedium?.copyWith(
+                        color: AppColors.titleColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: context.dynamicHeight(0.027)),
+                  ),
+                  TextButton(
+                    onPressed: () {},
+                    child: Text(
+                      "See All",
+                      style: context.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.lightPurpleColor,
+                          fontSize: context.dynamicHeight(0.027)),
+                    ),
+                  ),
+                ],
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: 20,
+                  itemBuilder: (BuildContext context, int index) {
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        "Payment",
+                        style: context.textTheme.labelMedium?.copyWith(
+                            color: AppColors.blackColor,
+                            fontSize: context.dynamicHeight(0.023),
+                            fontWeight: FontWeight.w400),
+                      ),
+                      subtitle: Text(
+                        "Payment Description",
+                        style: context.textTheme.bodyMedium?.copyWith(
+                            color: AppColors.subtitleColor,
+                            fontSize: context.dynamicHeight(0.02),
+                            fontWeight: FontWeight.w400),
+                      ),
+                      trailing: Text(
+                        "\$ 12",
+                        style: context.textTheme.labelMedium?.copyWith(
+                            color: AppColors.darkBlueColor,
+                            fontSize: context.dynamicHeight(0.02),
+                            fontWeight: FontWeight.w400),
+                      ),
+                      leading: CircleAvatar(
+                        radius: context.dynamicWidth(0.08),
+                        backgroundImage:
+                            AssetImage(ImageEnum.profilePicture.imagePath),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
+  }
+
+  void handleMenuItemTap(BuildContext context, String title) {
+    switch (title) {
+      // case "Transfer":
+      //   Navigator.pushNamed(context, RouteNames.transfer);
+      //   break;
+      // case "Payment":
+      //   Navigator.pushNamed(context, RouteNames.payment);
+      //   break;
+      case "Outgoing":
+        Navigator.pushNamed(context, RouteNames.addTransaction,
+        arguments:{
+          "type":"outgoing"
+        } );
+        break;
+      case "InCome":
+        Navigator.pushNamed(context, RouteNames.addTransaction, arguments: {
+          "type": "income",
+        });
+        break;
+      default:
+        break;
+    }
   }
 
   Column buildTiteleAndSubTitel(BuildContext context) {
@@ -252,3 +274,4 @@ class QuickMenuItem extends StatelessWidget {
     );
   }
 }
+

@@ -29,7 +29,9 @@ class AppRouter{
       case RouteNames.cardDetail:
       return MaterialPageRoute(builder: (context)=>CardDetail());
       case RouteNames.addTransaction:
-      return MaterialPageRoute(builder: (context)=>AddTransaction());
+      final args = settings.arguments as Map<String,dynamic>;
+      final type = args['type'] as String;
+      return MaterialPageRoute(builder: (context)=> AddTransaction(type: type,));
       
       default:
         return MaterialPageRoute(builder: (_) =>  SignIn());

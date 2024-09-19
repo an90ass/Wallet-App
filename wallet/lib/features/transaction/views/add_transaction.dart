@@ -1,31 +1,37 @@
 // import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wallet/config/extensions/context_extension.dart';
+import 'package:wallet/features/controller/transactio_controller.dart';
 import '../../../config/items/app_colors.dart';
 
 class AddTransaction extends StatefulWidget {
+  const AddTransaction({super.key, required this.type});
+  final String type;
+
   @override
   State<StatefulWidget> createState() {
     return _AddTransactionState();
   }
 }
 
+List<Map<String, dynamic>> keyboard_arrow_down_rounded_List = [
+  {"value": "1"},
+  {"value": "2"},
+  {"value": "3"},
+  {"value": "4"},
+  {"value": "5"},
+  {"value": "6"},
+  {"value": "7"},
+  {"value": "8"},
+  {"value": "9"},
+  {"value": "00"},
+  {"value": "0"},
+  {"value": null, "icon": Icons.close_rounded},
+];
+
 class _AddTransactionState extends State<AddTransaction> {
   String _value = "";
-  List<Map<String, dynamic>> keyboard_arrow_down_rounded_List = [
-    {"value": "1"},
-    {"value": "2"},
-    {"value": "3"},
-    {"value": "4"},
-    {"value": "5"},
-    {"value": "6"},
-    {"value": "7"},
-    {"value": "8"},
-    {"value": "9"},
-    {"value": "00"},
-    {"value": "0"},
-    {"value": null, "icon": Icons.close_rounded},
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(appBar: buildAppBar(context), body: buildBody(context));
@@ -154,7 +160,7 @@ class _AddTransactionState extends State<AddTransaction> {
                                     ),
                                     child: Icon(
                                       keyboard_arrow_down_rounded_List[index][
-                                          "icon"], // تأكد أن القيمة هنا هي IconData
+                                          "icon"],
                                       color: AppColors.darkPurpleColor,
                                     ),
                                   ),
@@ -162,21 +168,38 @@ class _AddTransactionState extends State<AddTransaction> {
                         ),
                       );
                     })),
-            MaterialButton(
-              onPressed: () {},
-              color: AppColors.darkBlueColor,
-              minWidth: context.dynamicWidth(0.6),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15)),
-              child: Padding(
-                padding: context.paddingVerticalDefault,
-                child: Text(
-                  "Add Transaction",
-                  style: context.textTheme.titleLarge
-                      ?.copyWith(color: AppColors.whiteColor),
-                ),
-              ),
-            )
+            Consumer(
+              builder: (context, ref, child) {
+                return MaterialButton(
+                  onPressed: () async {
+                    await ref
+                        .read(transactionControllerProvider)
+                        .addTransaction(type: widget.type, value: _value)
+                        .whenComplete(() {
+                    const snackBar = SnackBar(
+                        content: Text("Transaction added successfully!"),
+                        duration: Duration(seconds: 3),
+                        backgroundColor: Colors.green,
+                      );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      Navigator.pop(context);
+                    });
+                  },
+                  color: AppColors.darkBlueColor,
+                  minWidth: context.dynamicWidth(0.6),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15)),
+                  child: Padding(
+                    padding: context.paddingVerticalDefault,
+                    child: Text(
+                      "Add Transaction",
+                      style: context.textTheme.titleLarge
+                          ?.copyWith(color: AppColors.whiteColor),
+                    ),
+                  ),
+                );
+              },
+            ),
           ]),
     ));
   }
