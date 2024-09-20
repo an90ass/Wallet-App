@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:wallet/config/items/app_colors.dart';
 import 'package:wallet/config/routes/route_name.dart';
+import 'package:wallet/features/controller/user_controller.dart';
+import 'package:wallet/features/models/user.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -7,9 +11,9 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+
+  User user = User(userName: "", password: "", email: "");
 
   @override
   Widget build(BuildContext context) {
@@ -18,46 +22,118 @@ class _SignUpState extends State<SignUp> {
         title: Text('Sign Up'),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 16.0),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Password',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 16.0),
-            TextField(
-              controller: _confirmPasswordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Confirm Password',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context,RouteNames.signUp);
-              },
-              child: Text('Sign Up'),
-            ),
-          ],
+      body: Container(
+        padding: EdgeInsets.all(20.0),
+        child: Form(
+          key: formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              buildUserNameField(),
+              buildEmailField(),
+              buildPasswordField(),
+              // buildConfirmPasswordField(),
+              const SizedBox(height: 30.0,),
+              buildSubmitButton(),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget buildUserNameField() {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: "User Name",
+        hintText: "Example: Anas",
+      ),
+     onSaved: (String? value) {
+        user.userName = value!;
+      },
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter a username';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget buildEmailField() {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: "Email",
+        hintText: "Example: Anas@gmail.com",
+      ),
+       onSaved: (String? value) {
+        user.email = value!;
+      },
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter an email';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget buildPasswordField() {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: "Password",
+        hintText: "Example: 24141",
+      ),
+      obscureText: true,
+       onSaved: (String? value) {
+        user.password = value!;
+      
+      },
+      validator: (value) {
+        if (value == null || value.length < 6) {
+          return 'Password must be at least 6 characters';
+        }
+        return null;
+      },
+    );
+  }
+
+  
+
+  Widget buildSubmitButton() {
+    return Consumer(
+      builder: (context, ref, child) {
+        final userController = ref.read(userControllerProvider);
+
+        return ElevatedButton(
+          onPressed: () async {
+            if (formKey.currentState!.validate()) {
+              formKey.currentState!.save(); 
+
+              try {
+                await userController.createUser(
+                  email: user.email,
+                  password: user.password,
+                  userName: user.userName
+                );
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text("User created successfully!"),
+                  backgroundColor: Colors.green,
+                ));
+                Navigator.pushNamed(context, RouteNames.signIn);
+              } catch (e) {
+                print(e);
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text("Error: $e"),
+                  backgroundColor: Colors.red,
+                ));
+              }
+            }
+          },
+          child: Text("Sign Up"),
+        );
+      },
     );
   }
 }

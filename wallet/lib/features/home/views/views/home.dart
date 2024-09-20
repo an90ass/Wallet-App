@@ -32,7 +32,18 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
+      appBar: AppBar(
+     leading: IconButton(
+        icon: const Icon(
+          Icons.logout_sharp,
+          color: AppColors.containerColor,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      ),
+          extendBody: true,
         body: 
          _widgetOptions.elementAt(_selectedIndex),
         
