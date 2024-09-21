@@ -27,14 +27,12 @@ class UserRepository {
       password: password,
     );
 
-    // Set the displayName immediately after the user is created
     await userCredential.user!.updateDisplayName(userName);
 
 print(userCredential.user!.displayName);
-    // Optionally, save other account info
     await firestore
         .collection('users')
-        .doc(userName)
+        .doc(userCredential.user!.uid)
         .collection("Account info")
         .doc()
         .set({
@@ -55,10 +53,10 @@ print(userCredential.user!.displayName);
         password: password,
       );
 
-      await firestore.collection('users').doc(userCredential.user!.uid).set({
-        'uid': userCredential.user!.uid,
-        'email': email,
-      }, SetOptions(merge: true));
+      // await firestore.collection('users').doc(userCredential.user!.uid).set({
+      //   'uid': userCredential.user!.uid,
+      //   'email': email,
+      // }, SetOptions(merge: true));
     } catch (e) {
       throw Exception("Error signing in: ${e.toString()}");
     }

@@ -132,6 +132,15 @@ class Wallet extends StatelessWidget {
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+      onPressed: () {
+        Navigator.pushNamed(context, RouteNames.addCard); // Navigate to AddCard
+      },
+      child: Icon(Icons.add),
+      backgroundColor: AppColors.containerColor,
+      splashColor: AppColors.whiteColor,
+    ),
+  
     );
   }
 
@@ -218,14 +227,14 @@ class Wallet extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Card",
+                "Card Name",
                 style: context.textTheme.headlineMedium?.copyWith(
                     color: AppColors.whiteColor,
                     fontWeight: FontWeight.bold,
                     fontSize: context.dynamicHeight(0.027)),
               ),
               Text(
-                '\$ Mabank',
+                'Mabank',
                 style: context.textTheme.bodyMedium?.copyWith(
                     color: AppColors.whiteColor,
                     fontSize: context.dynamicHeight(0.035)),
@@ -234,8 +243,11 @@ class Wallet extends StatelessWidget {
           )
         ],
       ),
+      
     );
+    
   }
+  
 }
 
 class QuickMenuItem extends StatelessWidget {
@@ -272,6 +284,8 @@ class QuickMenuItem extends StatelessWidget {
         ],
       ),
     );
+    
   }
+  
 }
 

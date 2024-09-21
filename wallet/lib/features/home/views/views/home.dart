@@ -4,7 +4,7 @@ import 'package:wallet/config/extensions/context_extension.dart';
 import 'package:wallet/config/items/app_colors.dart';
 import 'package:wallet/config/utility/enums/image_enum.dart';
 import 'package:wallet/features/wallet/views/wallet.dart';
-import 'package:wallet/stats/views/stats.dart';
+import 'package:wallet/features/views/stats.dart';
 
 class Home extends StatefulWidget {
   State<StatefulWidget> createState() {

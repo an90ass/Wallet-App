@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wallet/config/extensions/context_extension.dart';
 import 'package:wallet/config/items/app_colors.dart';
-import 'package:wallet/config/routes/route_name.dart';
 import 'package:wallet/config/utility/enums/image_enum.dart';
+
+import '../controller/card_controller.dart';
 
 class Stats extends StatefulWidget {
   @override
@@ -13,23 +15,41 @@ class Stats extends StatefulWidget {
 
 class StatsState extends State<Stats> {
   int _currentIndex = 0;
+  late PageController _pageController;
+
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 0.7);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         bottom: false,
-        child: Padding(
-          padding: context.paddingAllDefault,
-          child: Column(
-            children: [
-              buildTitle(),
-              buildCardImages(),
-              buildPageIndicatorRow(),
-              buildCardInfoSection(),
-              buildTransactionHeader(),
-              buildTransactionList()
-            ],
-          ),
+        child: Consumer(
+          builder: (context, ref, child) {
+            final cardsAsync = ref.watch(cardProvider);
+            return cardsAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Center(child: Text('Error: $error')),
+              data: (userCards) {
+                return Padding(
+                  padding: context.paddingAllDefault,
+                  child: Column(
+                    children: [
+                      buildTitle(),
+                      buildCardImages(userCards),
+                      buildPageIndicatorRow(userCards.length),
+                      buildCardInfoSection(userCards),
+                      buildTransactionHeader(),
+                      buildTransactionList(),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
         ),
       ),
     );
@@ -126,32 +146,47 @@ class StatsState extends State<Stats> {
     );
   }
 
-  Widget buildCardImages() {
-    return Padding(
-      padding: context.paddingVerticalDefault,
-      child: SizedBox(
-        height: context.dynamicHeight(0.3),
-        child: PageView.builder(
-            controller: PageController(viewportFraction: 0.7),
-            padEnds: false,
-            itemCount: 2,
-            onPageChanged: (value) => setState(() {
+  Widget buildCardImages(List<Map<String, dynamic>> userCards) {
+    return SizedBox(
+      height: context.dynamicHeight(0.3),
+      child: userCards.isEmpty
+          ? const Center(
+              child: Text(
+                'No cards found',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            )
+          : PageView.builder(
+              controller: _pageController,
+              itemCount: userCards.length,
+              onPageChanged: (value) {
+                setState(() {
                   _currentIndex = value;
-                  print(_currentIndex);
-                }),
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) {
-              return Image.asset(ImageEnum.horizontalCard.imagePath);
-            }),
-      ),
+                });
+              },
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: context.dynamicWidth(0.02)),
+                  child: Image.asset(
+                    userCards[index]['imagePath'] ??
+                        ImageEnum.horizontalCard.imagePath,
+                  ),
+                );
+              },
+            ),
     );
   }
 
-  Widget buildPageIndicatorRow() {
+  Widget buildPageIndicatorRow(int userCardsLength) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < userCardsLength; i++)
           Padding(
             padding: EdgeInsets.only(right: context.dynamicWidth(0.02)),
             child: CircleAvatar(
@@ -165,24 +200,21 @@ class StatsState extends State<Stats> {
     );
   }
 
-  Widget buildCardInfoSection() {
+  Widget buildCardInfoSection(List<Map<String, dynamic>> userCards) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Padding(
           padding: context.paddingTopDefault,
           child: Text(
-            "Card ${_currentIndex + 1}",
+            userCards.isEmpty
+                ? "No cards found"
+                : userCards[_currentIndex]['cardName'] ??
+                    "Card ${_currentIndex + 1}",
             style: context.textTheme.labelSmall?.copyWith(
                 color: AppColors.subtitleColor,
                 fontSize: context.dynamicHeight(0.023)),
           ),
-        ),
-        Text(
-          '\$ 1000',
-          style: context.textTheme.bodyMedium?.copyWith(
-              color: AppColors.darkPurpleColor,
-              fontSize: context.dynamicHeight(0.035)),
         ),
       ],
     );
