@@ -1,19 +1,25 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
 import 'package:wallet/features/repository/user_repository.dart';
 
-final userControllerProvider = Provider((ref) => UserController(
-    userRepository: ref.watch(userRepositoryProvider)));
-
-class UserController {
+class UserController with ChangeNotifier {
   final UserRepository userRepository;
 
   UserController({required this.userRepository});
 
-  Future<void> createUser({required String email, required String password, required String userName}) async {
+  Future<void> createUser({
+    required String email,
+    required String password,
+    required String userName,
+  }) async {
     await userRepository.createUser(email: email, password: password, userName: userName);
+    notifyListeners(); // Notify listeners when user is created
   }
 
-  Future<void> signIn({required String email, required String password}) async {
+  Future<void> signIn({
+    required String email,
+    required String password,
+  }) async {
     await userRepository.signIn(email: email, password: password);
+    notifyListeners(); // Notify listeners when user is signed in
   }
 }

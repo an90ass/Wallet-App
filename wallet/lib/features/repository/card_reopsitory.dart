@@ -1,11 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-final cardRepositoryProvider = Provider((ref) {
-  return CardRepository(
-      auth: FirebaseAuth.instance, firestore: FirebaseFirestore.instance);
-});
 
 class CardRepository {
   final FirebaseAuth auth;
@@ -27,14 +21,14 @@ class CardRepository {
             .collection("users")
             .doc(currentUser.uid)
             .collection("cards")
-            .doc(accountNumber)  
+            .doc(accountNumber)
             .set({
           "holderName": holderName,
           "bankName": bankName,
           "accountNumber": accountNumber,
           "status": status,
           "validDates": validDates,
-          "cardName": "$holderName - $bankName",  
+          "cardName": "$holderName - $bankName",
         });
       } else {
         throw Exception("No authenticated user found.");
@@ -63,7 +57,7 @@ class CardRepository {
           "cardName": doc['cardName'],
           "holderName": doc['holderName'],
           "bankName": doc['bankName'],
-          "accountNumber": doc["accountNumber"],  
+          "accountNumber": doc["accountNumber"],
           "status": doc['status'],
           "validDates": doc['validDates'],
         };
@@ -72,5 +66,18 @@ class CardRepository {
       throw Exception("Error fetching cards: $e");
     }
   }
-}
+  Future<void> deleteCard({required String accountNumber})async {
+    try{
+      User? currentUser = auth.currentUser;
+  if (currentUser == null) {
+        throw Exception("No authenticated user found.");
+      }
+       await firestore.collection('users').doc(currentUser.uid).collection('cards').doc(accountNumber).delete();
+      
 
+    }catch(e){
+      throw Exception("Error deleting card: $e");
+
+    }
+  }
+}

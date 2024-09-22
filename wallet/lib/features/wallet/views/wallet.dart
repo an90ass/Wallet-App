@@ -1,11 +1,16 @@
 // import 'dart:js';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wallet/config/extensions/context_extension.dart';
 import 'package:wallet/config/items/app_colors.dart';
 import 'package:wallet/config/routes/route_name.dart';
 import 'package:wallet/config/utility/enums/image_enum.dart';
+import 'package:wallet/features/controller/card_controller.dart';
+
+import '../../controller/transactio_controller.dart';
+
 class Wallet extends StatelessWidget {
   final List<Map<String, String>> quickMenuItems = [
     {
@@ -21,13 +26,15 @@ class Wallet extends StatelessWidget {
       "svgPath": ImageEnum.payout.svgPath,
     },
     {
-      "title": "InCome",
+      "title": "Income",
       "svgPath": ImageEnum.topup.svgPath,
     },
   ];
 
   @override
   Widget build(BuildContext context) {
+    final selectedCardName = Provider.of<CardStateNotifier>(context).cardName; 
+
     return Scaffold(
       body: SafeArea(
         bottom: false,
@@ -40,20 +47,20 @@ class Wallet extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    buildTiteleAndSubTitel(context),
-                    buildAvatar(context)
+                    buildTitleAndSubtitle(context),
+                    buildAvatar(context),
                   ],
                 ),
               ),
               GestureDetector(
-                onTap: () =>
-                    Navigator.pushNamed(context, RouteNames.cardDetail),
+                onTap: () => Navigator.pushNamed(context, RouteNames.cardDetail),
                 child: Card(
                   elevation: 5,
                   color: AppColors.containerColor,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50)),
-                  child: builCardInfo(context),
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: buildCardInfo(context, selectedCardName),
                 ),
               ),
               Padding(
@@ -102,7 +109,7 @@ class Wallet extends StatelessWidget {
                         "Payment",
                         style: context.textTheme.labelMedium?.copyWith(
                             color: AppColors.blackColor,
-                            fontSize: context.dynamicHeight(0.023),
+                            fontSize: context.dynamicHeight(0.02),
                             fontWeight: FontWeight.w400),
                       ),
                       subtitle: Text(
@@ -133,32 +140,24 @@ class Wallet extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-      onPressed: () {
-        Navigator.pushNamed(context, RouteNames.addCard); // Navigate to AddCard
-      },
-      child: Icon(Icons.add),
-      backgroundColor: AppColors.containerColor,
-      splashColor: AppColors.whiteColor,
-    ),
-  
+        onPressed: () {
+          Navigator.pushNamed(context, RouteNames.addCard);
+        },
+        child: Icon(Icons.add),
+        backgroundColor: AppColors.containerColor,
+        splashColor: AppColors.whiteColor,
+      ),
     );
   }
 
   void handleMenuItemTap(BuildContext context, String title) {
     switch (title) {
-      // case "Transfer":
-      //   Navigator.pushNamed(context, RouteNames.transfer);
-      //   break;
-      // case "Payment":
-      //   Navigator.pushNamed(context, RouteNames.payment);
-      //   break;
       case "Outgoing":
-        Navigator.pushNamed(context, RouteNames.addTransaction,
-        arguments:{
-          "type":"outgoing"
-        } );
+        Navigator.pushNamed(context, RouteNames.addTransaction, arguments: {
+          "type": "outgoing",
+        });
         break;
-      case "InCome":
+      case "Income":
         Navigator.pushNamed(context, RouteNames.addTransaction, arguments: {
           "type": "income",
         });
@@ -168,7 +167,7 @@ class Wallet extends StatelessWidget {
     }
   }
 
-  Column buildTiteleAndSubTitel(BuildContext context) {
+  Column buildTitleAndSubtitle(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -196,66 +195,77 @@ class Wallet extends StatelessWidget {
     );
   }
 
-  Padding builCardInfo(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: context.dynamicWidth(0.1),
-        vertical: context.dynamicWidth(0.05),
+ Padding buildCardInfo(BuildContext context, String selectedCardName) {
+  return Padding(
+    padding: EdgeInsets.symmetric(
+      horizontal: context.dynamicWidth(0.1),
+      vertical: context.dynamicWidth(0.05),
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+                    Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Balance",
+              style: context.textTheme.headlineMedium?.copyWith(
+                  color: AppColors.whiteColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: context.dynamicHeight(0.020)),
+            ),
+                        SizedBox(height: context.dynamicHeight(0.02),),
+Consumer<TransactionController>(
+  builder: (context, transactionController, child) {
+    return Text(
+      '\$ ${transactionController.balance.toStringAsFixed(2)}', 
+      style: context.textTheme.bodyMedium?.copyWith(
+        color: AppColors.whiteColor,
+        fontSize: context.dynamicHeight(0.02),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Balance",
-                style: context.textTheme.headlineMedium?.copyWith(
-                    color: AppColors.whiteColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: context.dynamicHeight(0.027)),
-              ),
-              Text(
-                '\$ 1000',
-                style: context.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.whiteColor,
-                    fontSize: context.dynamicHeight(0.035)),
-              ),
-            ],
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Card Name",
-                style: context.textTheme.headlineMedium?.copyWith(
-                    color: AppColors.whiteColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: context.dynamicHeight(0.027)),
-              ),
-              Text(
-                'Mabank',
-                style: context.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.whiteColor,
-                    fontSize: context.dynamicHeight(0.035)),
-              ),
-            ],
-          )
-        ],
-      ),
-      
     );
-    
-  }
-  
+  },
+),
+
+
+          ],
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Card Name",
+              style: context.textTheme.headlineMedium?.copyWith(
+                  color: AppColors.whiteColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: context.dynamicHeight(0.020)),
+            ),
+            SizedBox(height: context.dynamicHeight(0.02),),
+            Text(
+              selectedCardName.isNotEmpty ? selectedCardName : 'No Cards Available',
+              style: context.textTheme.bodyMedium?.copyWith(
+                  color: AppColors.whiteColor,
+                  fontSize: context.dynamicHeight(0.020)),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}
 }
 
 class QuickMenuItem extends StatelessWidget {
   final String title;
   final String svgPath;
   final Function()? onTap;
-  const QuickMenuItem(
-      {super.key, required this.svgPath, required this.title, this.onTap});
+
+  const QuickMenuItem({
+    Key? key,
+    required this.title,
+    required this.svgPath,
+   
+ this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -277,7 +287,7 @@ class QuickMenuItem extends StatelessWidget {
               title,
               style: context.textTheme.labelMedium?.copyWith(
                 color: AppColors.extraLightPurple,
-                fontSize: context.dynamicWidth(0.02),
+                fontSize: context.dynamicWidth(0.040),
               ),
             ),
           ),

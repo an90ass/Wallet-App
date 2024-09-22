@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:wallet/config/items/app_colors.dart';
+import 'package:provider/provider.dart';
 import 'package:wallet/config/routes/route_name.dart';
 import 'package:wallet/features/controller/user_controller.dart';
 import 'package:wallet/features/models/user.dart';
@@ -12,7 +11,6 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   final formKey = GlobalKey<FormState>();
-
   User user = User(userName: "", password: "", email: "");
 
   @override
@@ -33,9 +31,8 @@ class _SignUpState extends State<SignUp> {
               buildUserNameField(),
               buildEmailField(),
               buildPasswordField(),
-              // buildConfirmPasswordField(),
-              const SizedBox(height: 30.0,),
-              buildSubmitButton(),
+              const SizedBox(height: 30.0),
+              buildSubmitButton(context),
             ],
           ),
         ),
@@ -49,7 +46,7 @@ class _SignUpState extends State<SignUp> {
         labelText: "User Name",
         hintText: "Example: Anas",
       ),
-     onSaved: (String? value) {
+      onSaved: (String? value) {
         user.userName = value!;
       },
       validator: (value) {
@@ -67,7 +64,7 @@ class _SignUpState extends State<SignUp> {
         labelText: "Email",
         hintText: "Example: Anas@gmail.com",
       ),
-       onSaved: (String? value) {
+      onSaved: (String? value) {
         user.email = value!;
       },
       validator: (value) {
@@ -86,9 +83,8 @@ class _SignUpState extends State<SignUp> {
         hintText: "Example: 24141",
       ),
       obscureText: true,
-       onSaved: (String? value) {
+      onSaved: (String? value) {
         user.password = value!;
-      
       },
       validator: (value) {
         if (value == null || value.length < 6) {
@@ -99,41 +95,34 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  
+  Widget buildSubmitButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () async {
+        if (formKey.currentState!.validate()) {
+          formKey.currentState!.save();
 
-  Widget buildSubmitButton() {
-    return Consumer(
-      builder: (context, ref, child) {
-        final userController = ref.read(userControllerProvider);
+          final userController = Provider.of<UserController>(context, listen: false);
 
-        return ElevatedButton(
-          onPressed: () async {
-            if (formKey.currentState!.validate()) {
-              formKey.currentState!.save(); 
-
-              try {
-                await userController.createUser(
-                  email: user.email,
-                  password: user.password,
-                  userName: user.userName
-                );
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text("User created successfully!"),
-                  backgroundColor: Colors.green,
-                ));
-                Navigator.pushNamed(context, RouteNames.signIn);
-              } catch (e) {
-                print(e);
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text("Error: $e"),
-                  backgroundColor: Colors.red,
-                ));
-              }
-            }
-          },
-          child: Text("Sign Up"),
-        );
+          try {
+            await userController.createUser(
+              email: user.email,
+              password: user.password,
+              userName: user.userName,
+            );
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("User created successfully!"),
+              backgroundColor: Colors.green,
+            ));
+            Navigator.pushNamed(context, RouteNames.signIn);
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("Error: $e"),
+              backgroundColor: Colors.red,
+            ));
+          }
+        }
       },
+      child: Text("Sign Up"),
     );
   }
 }

@@ -1,14 +1,74 @@
+// import 'dart:js';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart';
+import 'package:wallet/features/controller/card_controller.dart';
+import 'package:wallet/features/controller/user_controller.dart';
+import 'package:wallet/features/repository/card_reopsitory.dart';
+import 'package:wallet/features/repository/transaction_repository.dart';  
 import 'package:wallet/firebase_options.dart';
 import 'package:wallet/my_app.dart';
+import 'package:wallet/features/repository/user_repository.dart';
 
-void main() async{
+import 'features/controller/transactio_controller.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(ProviderScope(child: MyApp(),) );
-}
 
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => CardStateNotifier()),
+        
+        Provider<UserRepository>(
+          create: (_) => UserRepository(
+            auth: FirebaseAuth.instance,
+            firestore: FirebaseFirestore.instance,
+          ),
+        ),
+        
+        ChangeNotifierProxyProvider<UserRepository, UserController>(
+          create: (context) => UserController(userRepository: Provider.of<UserRepository>(context, listen: false)),
+          update: (context, userRepository, userController) => UserController(userRepository: userRepository),
+        ),
+
+        Provider<CardRepository>(
+          create: (_) => CardRepository(
+            auth: FirebaseAuth.instance,
+            firestore: FirebaseFirestore.instance,
+          ),
+        ),
+
+        ChangeNotifierProxyProvider<CardRepository,CardController>(
+          create: (context)=>CardController(cardRepository: Provider.of<CardRepository>(context,listen: false)),
+           update: (context,cardRepository,cardController)=>CardController(cardRepository: cardRepository)),
+        
+        // ChangeNotifierProxyProvider<CardRepository, CardController>(
+        //   create: (context) => CardController(cardRepository: Provider.of<CardRepository>(context, listen: false)),
+        //   update: (context, cardRepository, cardController) => CardController(cardRepository: cardRepository),
+        // ),
+        
+        Provider<TransactionRepository>(
+          create: (_) => TransactionRepository(
+            auth: FirebaseAuth.instance,
+            firestore: FirebaseFirestore.instance,
+          ),
+        ),
+        
+        ChangeNotifierProxyProvider<TransactionRepository, TransactionController>(
+          create: (context) => TransactionController(transactionRepository: Provider.of<TransactionRepository>(context, listen: false)),
+          update: (context, transactionRepository, transactionController) => TransactionController(transactionRepository: transactionRepository),
+        ),
+      ],
+      child: MyApp(),
+    ),
+  );
+}

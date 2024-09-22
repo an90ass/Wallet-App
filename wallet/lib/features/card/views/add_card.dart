@@ -1,21 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart';
 import 'package:wallet/config/extensions/context_extension.dart';
 import 'package:wallet/config/items/app_colors.dart';
 import 'package:wallet/config/utility/enums/image_enum.dart';
+import 'package:wallet/features/controller/card_controller.dart';
+import 'package:wallet/features/models/card.dart';
 
-import '../../controller/card_controller.dart';
-import '../../models/card.dart';
+class AddCard extends StatefulWidget {
+  @override
+  _AddCardState createState() => _AddCardState();
+}
 
-class AddCard extends ConsumerWidget {
+class _AddCardState extends State<AddCard> {
   final _formKey = GlobalKey<FormState>();
   final CardModel card = CardModel(
-      holderName: "", bankName: "", accountNumber: "", validDates: "");
+    holderName: "", 
+    bankName: "", 
+    accountNumber: "", 
+    validDates: "",
+  );
+  String? selectedDate;
+  String? selectedStatus;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
-        appBar: buildAppBar(context), body: buildBody(context, ref));
+      appBar: buildAppBar(context),
+      body: buildBody(context),
+    );
   }
 
   PreferredSizeWidget buildAppBar(BuildContext context) {
@@ -32,7 +44,7 @@ class AddCard extends ConsumerWidget {
     );
   }
 
-  Widget buildBody(BuildContext context, WidgetRef ref) {
+  Widget buildBody(BuildContext context) {
     return SafeArea(
       child: Container(
         alignment: Alignment.center,
@@ -46,7 +58,7 @@ class AddCard extends ConsumerWidget {
               buildImage(),
               buildForm(context),
               buildText(context),
-              buildSubmitButton(context, ref),
+              buildSubmitButton(context),
             ],
           ),
         ),
@@ -72,7 +84,7 @@ class AddCard extends ConsumerWidget {
     return Container(
       width: context.dynamicWidth(0.6),
       child: Text(
-        "Add a new card on your wallet for easy life",
+        "Add a new card to your wallet for easy life",
         style: context.textTheme.labelMedium?.copyWith(
             color: AppColors.blackColor,
             fontSize: context.dynamicHeight(0.023),
@@ -90,21 +102,21 @@ class AddCard extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(height: context.dynamicHeight(0.02)),
-          buildNameField(context),
+          buildNameField(),
           SizedBox(height: context.dynamicHeight(0.02)),
-          buildBankNameField(context),
+          buildBankNameField(),
           SizedBox(height: context.dynamicHeight(0.02)),
-          buildAccountNumberField(context),
+          buildAccountNumberField(),
           SizedBox(height: context.dynamicHeight(0.02)),
-          buildValidDatesField(context),
+          buildValidDatesField(),
           SizedBox(height: context.dynamicHeight(0.02)),
-          buildStatusField(context),
+          buildStatusField(),
         ],
       ),
     );
   }
 
-  Widget buildNameField(BuildContext context) {
+  Widget buildNameField() {
     return TextFormField(
       decoration: InputDecoration(
         labelText: "Cardholder Name",
@@ -125,7 +137,7 @@ class AddCard extends ConsumerWidget {
     );
   }
 
-  Widget buildBankNameField(BuildContext context) {
+  Widget buildBankNameField() {
     return TextFormField(
       decoration: InputDecoration(
         labelText: "Bank Name",
@@ -146,7 +158,7 @@ class AddCard extends ConsumerWidget {
     );
   }
 
-  Widget buildAccountNumberField(BuildContext context) {
+  Widget buildAccountNumberField() {
     return TextFormField(
       decoration: InputDecoration(
         labelText: "Account Number",
@@ -167,7 +179,7 @@ class AddCard extends ConsumerWidget {
     );
   }
 
-  Widget buildValidDatesField(BuildContext context) {
+  Widget buildValidDatesField() {
     final List<String> validDates = [
       '2024 - 2025',
       '2024 - 2026',
@@ -176,11 +188,8 @@ class AddCard extends ConsumerWidget {
       '2024 - 2029',
     ];
 
-    String? selectedDate;
     return DropdownButtonFormField<String>(
-      
       decoration: InputDecoration(
-        
         labelText: "Valid Dates",
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(12)),
@@ -190,9 +199,10 @@ class AddCard extends ConsumerWidget {
       ),
       value: selectedDate,
       hint: Text("Select valid dates"),
-      
       onChanged: (String? newValue) {
-        selectedDate = newValue;
+        setState(() {
+          selectedDate = newValue;
+        });
       },
       items: validDates.map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
@@ -206,88 +216,89 @@ class AddCard extends ConsumerWidget {
     );
   }
 
-  Widget buildStatusField(BuildContext context) {
-
+  Widget buildStatusField() {
     final List<String> status = ["Active", "Inactive"];
-    String? selectedStatus;
 
     return DropdownButtonFormField<String>(
-        decoration: InputDecoration(
-          labelText: "Status",
-          border: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(12)),
-          ),
-          filled: true,
-          fillColor: AppColors.lightPurpleColor,
-          
+      decoration: InputDecoration(
+        labelText: "Status",
+        border: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(12)),
         ),
-        value: selectedStatus,
-        hint: Text("Select status"),
-        onChanged: (String? newValue) {
+        filled: true,
+        fillColor: AppColors.lightPurpleColor,
+      ),
+      value: selectedStatus,
+      hint: Text("Select status"),
+      onChanged: (String? newValue) {
+        setState(() {
           selectedStatus = newValue;
-        },
-        items: status.map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value),
-          );
-        }).toList(),
-        onSaved: (String? value) {
-          card.status = value;
         });
+      },
+      items: status.map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+      onSaved: (String? value) {
+        card.status = value!;
+      },
+    );
   }
 
- Widget buildSubmitButton(BuildContext context, WidgetRef ref) {
-  return Padding(
-    padding: EdgeInsets.only(top: context.dynamicHeight(0.02)),
-    child: ElevatedButton(
-      onPressed: () {
-        if (_formKey.currentState!.validate()) {
-          _formKey.currentState!.save();
-          ref
-              .read(cardControllerProvider)
-              .addCard(
-                holderName: card.holderName,
-                bankName: card.bankName,
-                accountNumber: card.accountNumber,  // Used as document ID
-                validDates: card.validDates,
-                status: card.status ?? 'Active',
-                ref: ref,  // Pass ref here
-              )
-              .then((_) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text("Card added successfully"),
-                backgroundColor: Colors.green[600],
-              ),
-            );
-          }).catchError((e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text("Error: $e"),
-                backgroundColor: Colors.red[600],
-              ),
-            );
-          });
-        }
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.containerColor,
-        padding: EdgeInsets.symmetric(
+  Widget buildSubmitButton(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: context.dynamicHeight(0.02)),
+      child: ElevatedButton(
+        onPressed: () {
+          if (_formKey.currentState!.validate()) {
+            _formKey.currentState!.save();
+
+            final cardController = Provider.of<CardController>(context, listen: false);
+
+            cardController.addCard(
+              holderName: card.holderName,
+              bankName: card.bankName,
+              accountNumber: card.accountNumber,
+              validDates: card.validDates,
+              status: card.status ?? 'Active',
+              context: context
+            ).then((_) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Card added successfully"),
+                  backgroundColor: Colors.green[600],
+                ),
+              );
+            }).catchError((e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Error: $e"),
+                  backgroundColor: Colors.red[600],
+                ),
+              );
+            });
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.containerColor,
+          padding: EdgeInsets.symmetric(
             horizontal: context.dynamicWidth(0.3),
-            vertical: context.dynamicHeight(0.02)),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0),
+            vertical: context.dynamicHeight(0.02),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30.0),
+          ),
+        ),
+        child: Text(
+          "Save",
+          style: context.textTheme.labelLarge?.copyWith(
+            color: AppColors.whiteColor,
+            fontSize: context.dynamicHeight(0.025),
+          ),
         ),
       ),
-      child: Text(
-        "Save",
-        style: context.textTheme.labelLarge?.copyWith(
-            color: AppColors.whiteColor,
-            fontSize: context.dynamicHeight(0.025)),
-      ),
-    ),
-  );
-}
-
+    );
+  }
 }

@@ -1,14 +1,13 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
 import 'package:wallet/features/repository/transaction_repository.dart';
 
-final transactionControllerProvider = Provider<TransactionController>((ref) {
-  return TransactionController(
-    transactionRepository: ref.watch(transactionRepositoryProvider), 
-  );
-});
-
-class TransactionController {
+class TransactionController extends ChangeNotifier {
   final TransactionRepository transactionRepository;
+  double _balance = 0.0; 
+   String? _currentCardNumber;
+     String? get currentCardNumber => _currentCardNumber; // جلب رقم البطاقة الحالي
+
+  double get balance => _balance;
 
   TransactionController({required this.transactionRepository});
 
@@ -22,5 +21,15 @@ class TransactionController {
       type: type,
       value: value,
     );
+    await calculateBalance( cardNumber: cardNumber);
+
+    notifyListeners();
+  }
+  Future<void> calculateBalance({required String cardNumber}) async {
+    _balance = await transactionRepository.calculateBalance(cardNumber);
+        _currentCardNumber = cardNumber; 
+
+    notifyListeners();
+    
   }
 }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart';
 import 'package:wallet/config/routes/route_name.dart';
 import 'package:wallet/features/models/user.dart';
 import '../../controller/user_controller.dart'; 
+
 class SignIn extends StatefulWidget {
   @override
   _SignInState createState() => _SignInState();
@@ -31,7 +32,7 @@ class _SignInState extends State<SignIn> {
               buildEmailField(),
               buildPasswordField(),
               SizedBox(height: 10),
-              buildSignInButton(),
+              buildSignInButton(context),
               buildSignUpInButton(),
             ],
           ),
@@ -47,9 +48,8 @@ class _SignInState extends State<SignIn> {
         labelText: "Email",
         hintText: "Example: Anas@gmail.com",
       ),
-       onSaved: (String? value) {
+      onSaved: (String? value) {
         _user.email = value!;
-      
       },
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -67,9 +67,8 @@ class _SignInState extends State<SignIn> {
         labelText: "Password",
         hintText: "Example: 24141",
       ),
-       onSaved: (String? value) {
+      onSaved: (String? value) {
         _user.password = value!;
-      
       },
       obscureText: true,
       validator: (value) {
@@ -81,39 +80,41 @@ class _SignInState extends State<SignIn> {
     );
   }
 
-  Widget buildSignInButton() {
-    return Consumer(builder: (context, ref, child) {
-      final userController = ref.read(userControllerProvider);
+  Widget buildSignInButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () async {
+        if (formKey.currentState!.validate()) {
+          formKey.currentState!.save();
 
-      return ElevatedButton(
-        onPressed: () async {
-          if (formKey.currentState!.validate()) {
-            formKey.currentState!.save();
-            try {
-              await userController.signIn(
-                  email: _user.email,
-                  password: _user.password);
+          final userController = Provider.of<UserController>(context, listen: false);
 
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
+          try {
+            await userController.signIn(
+              email: _user.email,
+              password: _user.password,
+            );
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
                 content: Text("Logged in successfully!"),
                 backgroundColor: Colors.green,
+              ),
+            );
+            Navigator.pushNamed(context, RouteNames.home);
+          } catch (e) {
+            setState(() {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(
+                  "Sign-in failed. Please check your email and password and try again.",
+                ),
+                backgroundColor: Colors.red[700],
               ));
-              Navigator.pushNamed(context, RouteNames.home);
-            } catch (e) {
-              setState(() {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(
-                      "Sign-in failed. Please check your email and password and try again."),
-                  backgroundColor: Colors.red[700],
-                ));
-              });
-            }
+            });
           }
-        },
-        child:const  Text('Sign in'),
-      );
-    });
+        }
+      },
+      child: const Text('Sign in'),
+    );
   }
 
   Widget buildSignUpInButton() {

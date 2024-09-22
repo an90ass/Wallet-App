@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart';
 import 'package:wallet/config/extensions/context_extension.dart';
 import 'package:wallet/features/controller/card_controller.dart';
-import 'package:wallet/features/controller/transactio_controller.dart';
 import '../../../config/items/app_colors.dart';
+import '../../controller/transactio_controller.dart';
 
 class AddTransaction extends StatefulWidget {
   const AddTransaction({super.key, required this.type});
-  final String type;
+  final String type; 
 
   @override
   State<StatefulWidget> createState() => _AddTransactionState();
@@ -70,7 +70,6 @@ class _AddTransactionState extends State<AddTransaction> {
     );
   }
 
-  // Widget to display the entered transaction value
   Widget _buildTransactionAmount(BuildContext context) {
     return Align(
       child: Text(
@@ -84,12 +83,10 @@ class _AddTransactionState extends State<AddTransaction> {
   }
 
   Widget _buildCardDropdown(BuildContext context) {
-    return Consumer(
-      builder: (context, ref, _) {
-        final cardsAsync = ref.watch(cardControllerProvider).fetchUserCards();
-
+    return Consumer<CardController>(
+      builder: (context, cardController, _) {
         return FutureBuilder<List<Map<String, dynamic>>>(
-          future: cardsAsync,
+          future: cardController.fetchUserCards(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator();
@@ -200,8 +197,8 @@ class _AddTransactionState extends State<AddTransaction> {
   }
 
   Widget _buildSubmitButton(BuildContext context) {
-    return Consumer(
-      builder: (context, ref, child) {
+    return Consumer<TransactionController>(
+      builder: (context, transactionController, child) {
         return MaterialButton(
           onPressed: () async {
             if (selectedCardNumber == null) {
@@ -214,12 +211,11 @@ class _AddTransactionState extends State<AddTransaction> {
               return;
             }
 
-            await ref
-                .read(transactionControllerProvider)
+            await transactionController
                 .addTransaction(
-                  cardNumber: selectedCardNumber!, // Pass selectedCardNumber here
-                  type: widget.type, // Pass type (income or expense)
-                  value: transaction_value, // The transaction value
+                  cardNumber: selectedCardNumber!, 
+                  type: widget.type, 
+                  value: transaction_value, 
                 )
                 .whenComplete(() {
               const snackBar = SnackBar(
@@ -228,6 +224,7 @@ class _AddTransactionState extends State<AddTransaction> {
                 backgroundColor: Colors.green,
               );
               ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              
               Navigator.pop(context);
             });
           },
