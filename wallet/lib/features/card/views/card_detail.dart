@@ -4,7 +4,8 @@ import 'package:wallet/config/extensions/context_extension.dart';
 import 'package:wallet/config/items/app_colors.dart';
 import 'package:wallet/config/utility/enums/image_enum.dart';
 import 'package:wallet/features/controller/card_controller.dart';
-import 'package:wallet/features/controller/transactio_controller.dart';
+
+import '../../controller/transactio_controller.dart';
 
 class CardDetail extends StatefulWidget {
   @override
@@ -44,6 +45,13 @@ class _CardDetailState extends State<CardDetail> {
               "Valid": selectedCard['validDates'].toString(),
             };
           });
+              Provider.of<CardStateNotifier>(context, listen: false)
+                .updateCard(selectedCard['cardName']);
+            Provider.of<CardStateNotifier>(context, listen: false)
+                .updateCardNumber(selectedCard['accountNumber']);
+                
+            Provider.of<TransactionController>(context, listen: false)
+                  .getBalance( selectedCard['accountNumber'],);
         } catch (e) {
           print('Card not found: $e');
         }
@@ -146,8 +154,11 @@ class _CardDetailState extends State<CardDetail> {
 
             Provider.of<CardStateNotifier>(context, listen: false)
                 .updateCard(selectedCard['cardName']);
+            Provider.of<CardStateNotifier>(context, listen: false)
+                .updateCardNumber(selectedCard['accountNumber']);
+                
             Provider.of<TransactionController>(context, listen: false)
-                  .calculateBalance(cardNumber: selectedCard['accountNumber'],);
+                  .getBalance( selectedCard['accountNumber'],);
           });
         },
         items: userCards.map<DropdownMenuItem<String>>((Map<String, dynamic> card) {

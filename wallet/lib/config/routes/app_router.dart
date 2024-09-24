@@ -11,6 +11,7 @@ import '../../features/card/views/add_card.dart';
 import '../../features/card/views/card_detail.dart';
 import '../../features/home/views/views/home.dart';
 import '../../features/transaction/views/add_transaction.dart';
+import '../../features/transfer/views/transfer.dart';
 import 'route_name.dart';
 
 class AppRouter{
@@ -32,7 +33,9 @@ class AppRouter{
       final args = settings.arguments as Map<String,dynamic>;
       final type = args['type'] as String;
       return MaterialPageRoute(builder: (context)=> AddTransaction(type: type,));
-      
+      case RouteNames.transfer:
+      return MaterialPageRoute(builder: (context)=>Transfer());
+      case RouteNames.addTransaction:
       default:
         return MaterialPageRoute(builder: (_) =>  SignIn());
     }

@@ -34,6 +34,7 @@ class Wallet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selectedCardName = Provider.of<CardStateNotifier>(context).cardName; 
+    final selectedCardNumber = Provider.of<CardStateNotifier>(context).cardNumber; 
 
     return Scaffold(
       body: SafeArea(
@@ -60,7 +61,7 @@ class Wallet extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),
                   ),
-                  child: buildCardInfo(context, selectedCardName),
+                  child: buildCardInfo(context, selectedCardName,selectedCardNumber),
                 ),
               ),
               Padding(
@@ -162,6 +163,9 @@ class Wallet extends StatelessWidget {
           "type": "income",
         });
         break;
+        case "Transfer":
+        Navigator.pushNamed(context, RouteNames.transfer);
+        break;
       default:
         break;
     }
@@ -195,7 +199,7 @@ class Wallet extends StatelessWidget {
     );
   }
 
- Padding buildCardInfo(BuildContext context, String selectedCardName) {
+ Padding buildCardInfo(BuildContext context, String selectedCardName, String selectedCardNumber) {
   return Padding(
     padding: EdgeInsets.symmetric(
       horizontal: context.dynamicWidth(0.1),
@@ -204,7 +208,7 @@ class Wallet extends StatelessWidget {
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-                    Column(
+        Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -214,20 +218,23 @@ class Wallet extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   fontSize: context.dynamicHeight(0.020)),
             ),
-                        SizedBox(height: context.dynamicHeight(0.02),),
-Consumer<TransactionController>(
-  builder: (context, transactionController, child) {
-    return Text(
-      '\$ ${transactionController.balance.toStringAsFixed(2)}', 
-      style: context.textTheme.bodyMedium?.copyWith(
-        color: AppColors.whiteColor,
-        fontSize: context.dynamicHeight(0.02),
-      ),
-    );
-  },
-),
-
-
+            SizedBox(height: context.dynamicHeight(0.02)),
+            Consumer<TransactionController>(
+              builder: (context, transactionController, child) {
+                if (selectedCardNumber != transactionController.currentCardNumber) {
+                  
+                    transactionController.getBalance(selectedCardNumber);
+                  
+                }
+                return Text(
+                  '\$ ${transactionController.balance.toStringAsFixed(2)}',
+                  style: context.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.whiteColor,
+                    fontSize: context.dynamicHeight(0.02),
+                  ),
+                );
+              },
+            ),
           ],
         ),
         Column(
@@ -240,7 +247,7 @@ Consumer<TransactionController>(
                   fontWeight: FontWeight.bold,
                   fontSize: context.dynamicHeight(0.020)),
             ),
-            SizedBox(height: context.dynamicHeight(0.02),),
+            SizedBox(height: context.dynamicHeight(0.02)),
             Text(
               selectedCardName.isNotEmpty ? selectedCardName : 'No Cards Available',
               style: context.textTheme.bodyMedium?.copyWith(
@@ -253,6 +260,8 @@ Consumer<TransactionController>(
     ),
   );
 }
+
+
 }
 
 class QuickMenuItem extends StatelessWidget {

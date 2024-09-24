@@ -3,9 +3,9 @@ import 'package:wallet/features/repository/transaction_repository.dart';
 
 class TransactionController extends ChangeNotifier {
   final TransactionRepository transactionRepository;
-  double _balance = 0.0; 
-   String? _currentCardNumber;
-     String? get currentCardNumber => _currentCardNumber; // جلب رقم البطاقة الحالي
+  String? _currentCardNumber;
+  String? get currentCardNumber => _currentCardNumber;
+  double _balance = 0.0;
 
   double get balance => _balance;
 
@@ -21,15 +21,33 @@ class TransactionController extends ChangeNotifier {
       type: type,
       value: value,
     );
-    await calculateBalance( cardNumber: cardNumber);
+    addBalance(cardNumber);
+  }
 
+  Future<void> addBalance(String cardNumber) async {
+    await transactionRepository.addBalance(cardNumber);
     notifyListeners();
   }
-  Future<void> calculateBalance({required String cardNumber}) async {
-    _balance = await transactionRepository.calculateBalance(cardNumber);
-        _currentCardNumber = cardNumber; 
 
-    notifyListeners();
-    
+  Future<void> getBalance(String cardNumber) async {
+    if (cardNumber.isEmpty) {
+      print('Card number is empty');
+      _balance = 0.0;
+      notifyListeners();
+      return;
+    }
+
+    try {
+      double balance = await transactionRepository.getBalance(cardNumber);
+      _balance = balance;
+    } catch (e) {
+      print('Error getting balance: $e');
+      _balance = 0.0;
+    }
+
+    print(_balance);
+    print(cardNumber);
+
+    notifyListeners(); // تحديث الـ UI
   }
 }

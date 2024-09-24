@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wallet/features/controller/transactio_controller.dart';
 import 'package:wallet/features/repository/card_reopsitory.dart';
 
 class CardController extends ChangeNotifier {
@@ -38,17 +39,26 @@ class CardController extends ChangeNotifier {
 
 
   
- Future<void> deleteCard(BuildContext context, String accountNumber) async {
+Future<void> deleteCard(BuildContext context, String accountNumber) async {
   try {
     await cardRepository.deleteCard(accountNumber: accountNumber);
 
     List<Map<String, dynamic>> updatedCards = await fetchUserCards();
 
     if (updatedCards.isNotEmpty) {
+      // Update the selected card and recalculate the balance
       final newCard = updatedCards.first;
+      String newCardNumber = newCard["accountNumber"];
       Provider.of<CardStateNotifier>(context, listen: false).updateCard(newCard["cardName"]);
+      Provider.of<CardStateNotifier>(context, listen: false).updateCardNumber(newCardNumber);
+      
+      // Recalculate the balance for the new card
+      await Provider.of<TransactionController>(context, listen: false).getBalance(newCardNumber);
     } else {
+      // If no cards are left, reset the balance and card information
       Provider.of<CardStateNotifier>(context, listen: false).updateCard('No Cards Available');
+      Provider.of<CardStateNotifier>(context, listen: false).updateCardNumber('');
+      await Provider.of<TransactionController>(context, listen: false).getBalance("");
     }
 
     notifyListeners();
@@ -57,14 +67,23 @@ class CardController extends ChangeNotifier {
     throw Exception("Error deleting card: $e");
   }
 }
+
+
 }
 class CardStateNotifier extends ChangeNotifier {
   String _cardName = 'Card Name';
+  String _carNumber= 'Card Number';
 
   String get cardName => _cardName;
+  String get cardNumber => _carNumber;
 
   void updateCard(String newCardName) {
     _cardName = newCardName;
+    notifyListeners();
+  }
+
+   void updateCardNumber(String newCardNumber) {
+    _carNumber = newCardNumber;
     notifyListeners();
   }
 }

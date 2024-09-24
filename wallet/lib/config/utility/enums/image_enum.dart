@@ -12,6 +12,8 @@ enum ImageEnum {
   topup("topup"),
   transfer("transfer"),
   wallet("wallet"),
+  signIn("sign_in"),
+  signUp("sign_up_new"),
 
   // Add new image enum here
   horizontalCard("horizontal_card"),

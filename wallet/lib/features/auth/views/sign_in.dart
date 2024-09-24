@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wallet/config/extensions/context_extension.dart';
+import 'package:wallet/config/items/app_colors.dart';
 import 'package:wallet/config/routes/route_name.dart';
+import 'package:wallet/config/utility/enums/image_enum.dart';
 import 'package:wallet/features/models/user.dart';
-import '../../controller/user_controller.dart'; 
+import '../../controller/user_controller.dart';
 
 class SignIn extends StatefulWidget {
   @override
@@ -12,82 +15,136 @@ class SignIn extends StatefulWidget {
 class _SignInState extends State<SignIn> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isPasswordVisible =false;
+  final _formKey = GlobalKey<FormState>();
   User _user = User(userName: "", password: "", email: "");
   final formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Sign In'),
-        centerTitle: true,
-      ),
-      body: Container(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              buildEmailField(),
-              buildPasswordField(),
-              SizedBox(height: 10),
-              buildSignInButton(context),
-              buildSignUpInButton(),
-            ],
-          ),
+      body: SafeArea(
+        child: Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            Container(
+                height: MediaQuery.of(context).size.height,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage(ImageEnum.signIn.imagePath),
+                      fit: BoxFit.cover),
+                )),
+            AspectRatio(
+              aspectRatio: 1,
+              child: Container(
+                padding: EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                    color: AppColors.whiteColor,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20))),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Sign in ",
+                        style: context.textTheme.bodyMedium?.copyWith(
+                            color: AppColors.darkBlueColor, fontSize: 24),
+                      ),
+                    ),
+                    Form(
+                      key: _formKey,
+                        child: Column(
+                      children: [
+                        buildEmailField(),
+                        buildPasswordField(),
+                        buildSignInButton(),
+                        buildForgetPasswordButton(),
+                        builSignUpButton(),
+                      ],
+                    ))
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget buildEmailField() {
-    return TextFormField(
-      controller: _emailController,
-      decoration: InputDecoration(
-        labelText: "Email",
-        hintText: "Example: Anas@gmail.com",
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 10),
+      child: TextFormField(
+        decoration: InputDecoration(
+            labelText: "Email",
+            hintText: "Example: anass12976@gmail.com",
+            hintStyle: const TextStyle(
+              color: Colors.grey,
+              fontSize: 14,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.w400,
+            ),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: BorderSide(color: AppColors.lightPurpleColor))),
+                onSaved: (String? value){
+                  _user.email = value!;
+                },
       ),
-      onSaved: (String? value) {
-        _user.email = value!;
-      },
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter an email';
-        }
-        return null;
-      },
     );
   }
 
-  Widget buildPasswordField() {
-    return TextFormField(
-      controller: _passwordController,
-      decoration: InputDecoration(
-        labelText: "Password",
-        hintText: "Example: 24141",
+   Widget buildPasswordField() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: TextFormField(
+        controller: _passwordController,
+        obscureText: !_isPasswordVisible, 
+        decoration: InputDecoration(
+          labelText: "Password",
+          hintText: "Example: 141@aaf3!",
+          hintStyle: const TextStyle(
+            color: Colors.grey,
+            fontSize: 14,
+            fontStyle: FontStyle.italic,
+            fontWeight: FontWeight.w400,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide(color: AppColors.lightPurpleColor),
+          ),
+          suffixIcon: IconButton(
+            icon: Icon(
+              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+            ),
+            onPressed: () {
+              setState(() {
+                _isPasswordVisible = !_isPasswordVisible;
+              });
+            },
+          ),
+        ),
+        onSaved: (String? value){
+          _user.password = value!;
+        },
       ),
-      onSaved: (String? value) {
-        _user.password = value!;
-      },
-      obscureText: true,
-      validator: (value) {
-        if (value == null || value.length < 6) {
-          return 'Password must be at least 6 characters';
-        }
-        return null;
-      },
     );
   }
-
-  Widget buildSignInButton(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () async {
-        if (formKey.currentState!.validate()) {
-          formKey.currentState!.save();
-
-          final userController = Provider.of<UserController>(context, listen: false);
-
+  buildSignInButton() {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical:5),
+ 
+      child: MaterialButton(
+        minWidth: double.infinity,
+        onPressed: () async{
+          if (_formKey.currentState!.validate()) {
+_formKey.currentState!.save();
+final userController = Provider.of<UserController>(context, listen: false);
           try {
             await userController.signIn(
               email: _user.email,
@@ -100,6 +157,8 @@ class _SignInState extends State<SignIn> {
                 backgroundColor: Colors.green,
               ),
             );
+            _emailController.text ="";
+            _passwordController.text ="";
             Navigator.pushNamed(context, RouteNames.home);
           } catch (e) {
             setState(() {
@@ -112,17 +171,57 @@ class _SignInState extends State<SignIn> {
             });
           }
         }
-      },
-      child: const Text('Sign in'),
+      
+          },
+          
+        
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text("Sign in",
+              style: TextStyle(color: AppColors.whiteColor, fontSize: 20)),
+        ),
+        color:  AppColors.lightPurpleColor,
+      
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20))),
+      
     );
   }
 
-  Widget buildSignUpInButton() {
-    return ElevatedButton(
-      onPressed: () {
-        Navigator.pushNamed(context, RouteNames.signUp);
-      },
-      child: Text('Sign up'),
+  Widget buildForgetPasswordButton() {
+    return Container(
+        alignment: Alignment.centerLeft,
+        child: GestureDetector(
+            onTap: () {},
+            child: InkWell(
+              child: Text(
+                "Forget Password ?",
+                style: TextStyle(
+                    fontSize: 15,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.grey[600]),
+              ),
+            )));
+  }
+  
+  Widget builSignUpButton() {
+    return Padding(
+      padding: const EdgeInsets.only(top:20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("Don't haven't an account ? "),
+          GestureDetector(onTap: (){
+            Navigator.pushNamed(context,RouteNames.signUp);
+          }, child: Text("Sign up",  style: TextStyle(
+                    fontSize: 15,
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[600]),
+          ))
+        ],
+      
+      ),
     );
   }
 }

@@ -6,7 +6,6 @@ class TransactionRepository {
   final FirebaseFirestore firestore;
 
   TransactionRepository({required this.auth, required this.firestore});
-  
 
   Future<void> addTransaction({
     required String cardNumber,
@@ -28,41 +27,103 @@ class TransactionRepository {
         "value": value,
         "timestamp": FieldValue.serverTimestamp(),
       });
-      // calculateBalance(cardNumber);
     } else {
       throw Exception("No authenticated user found.");
     }
   }
 
-  Future<double> calculateBalance(String cardNumber) async {
+  Future<void> addBalance(String cardNumber) async {
+    User? currentUser = auth.currentUser;
+
+    if (currentUser != null) {
+      QuerySnapshot<Map<String, dynamic>> transactionsSnapshot = await firestore
+          .collection("users")
+          .doc(currentUser.uid)
+          .collection("cards")
+          .doc(cardNumber)
+          .collection("transactions")
+          .get();
+
+      double balance = 0.0;
+
+      for (var doc in transactionsSnapshot.docs) {
+        Map<String, dynamic> transactionData = doc.data();
+        String type = transactionData["type"];
+        double value =
+            double.tryParse(transactionData["value"].toString()) ?? 0.0;
+
+        if (type == "income") {
+          balance += value;
+        } else if (type == "outgoing") {
+          balance -= value;
+        }
+      }
+
+      await firestore
+          .collection("users")
+          .doc(currentUser.uid)
+          .collection("cards")
+          .doc(cardNumber)
+          .set({
+        "balance": balance,
+      }, SetOptions(merge: true));
+    }
+  }
+
+  Future<double> getBalance(String cardNumber) async {
     User? currentUser = auth.currentUser;
 
     if (currentUser == null) {
-      throw Exception("No authenticated user found.");
+      return Future.error(Exception("No authenticated user found."));
     }
 
-    QuerySnapshot<Map<String, dynamic>> transactionsSnapshot = await firestore
+    DocumentSnapshot<Map<String, dynamic>> cardDoc = await firestore
         .collection("users")
         .doc(currentUser.uid)
         .collection("cards")
         .doc(cardNumber)
-        .collection("transactions")
         .get();
 
-    double balance = 0.0;
-
-    for (var doc in transactionsSnapshot.docs) {
-      Map<String, dynamic> transactionData = doc.data();
-      String type = transactionData["type"];
-      double value = double.tryParse(transactionData["value"]) ?? 0.0;
-
-      if (type == "income") {
-        balance += value;
-      } else if (type == "outgoing") {
-        balance -= value;
-      }
+    if (cardDoc.exists) {
+      double balance = cardDoc.data()?["balance"]?.toDouble() ?? 0.0;
+      return balance;
+    } else {
+      return Future.error(Exception("Card not found."));
     }
-  print(balance);
-    return balance;
   }
+// Future<double> getBalance(String cardNumber){
+//   return calculateBalance(cardNumber);
+// }
 }
+  // Future<double> calculateBalance(String cardNumber) async {
+  //   User? currentUser = auth.currentUser;
+
+  //   if (currentUser == null) {
+  //     throw Exception("No authenticated user found.");
+  //   }
+
+  //   QuerySnapshot<Map<String, dynamic>> transactionsSnapshot = await firestore
+  //       .collection("users")
+  //       .doc(currentUser.uid)
+  //       .collection("cards")
+  //       .doc(cardNumber)
+  //       .collection("transactions")
+  //       .get();
+
+  //   double balance = 0.0;
+
+  //   for (var doc in transactionsSnapshot.docs) {
+  //     Map<String, dynamic> transactionData = doc.data();
+  //     String type = transactionData["type"];
+  //     double value = double.tryParse(transactionData["value"]) ?? 0.0;
+
+  //     if (type == "income") {
+  //       balance += value;
+  //     } else if (type == "outgoing") {
+  //       balance -= value;
+  //     }
+  //   }
+  // print(balance);
+  //   return balance;
+  // }
+
