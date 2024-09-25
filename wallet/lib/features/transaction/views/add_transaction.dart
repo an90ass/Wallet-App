@@ -7,15 +7,15 @@ import '../../controller/transactio_controller.dart';
 
 class AddTransaction extends StatefulWidget {
   const AddTransaction({super.key, required this.type});
-  final String type; 
+  final String type;
 
   @override
   State<StatefulWidget> createState() => _AddTransactionState();
 }
 
 class _AddTransactionState extends State<AddTransaction> {
-  String transaction_value = ""; 
-  String? selectedCardNumber; 
+  String transaction_value = "";
+  String? selectedCardNumber;
 
   final List<Map<String, dynamic>> _keyboardItems = [
     {"value": "1"},
@@ -34,6 +34,8 @@ class _AddTransactionState extends State<AddTransaction> {
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<CardController>(context, listen: false).fetchUserCards();
+
     return Scaffold(
       appBar: _buildAppBar(context),
       body: _buildBody(context),
@@ -43,7 +45,8 @@ class _AddTransactionState extends State<AddTransaction> {
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new_outlined, color: AppColors.containerColor),
+        icon: const Icon(Icons.arrow_back_ios_new_outlined,
+            color: AppColors.containerColor),
         onPressed: () => Navigator.pop(context),
       ),
     );
@@ -84,48 +87,48 @@ class _AddTransactionState extends State<AddTransaction> {
 
   Widget _buildCardDropdown(BuildContext context) {
     return Consumer<CardController>(
-      builder: (context, cardController, _) {
-        return FutureBuilder<List<Map<String, dynamic>>>(
-          future: cardController.fetchUserCards(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Text('No cards found');
-            }
+      builder: (context, cardController, child) {
+        if (cardController.userCards.isEmpty) {
+          return Text(
+            "No cards available. Please add a card.!!",
+            style: TextStyle(color: Colors.redAccent),
+          );
+        }
 
-            List<Map<String, dynamic>> userCards = snapshot.data!;
+        // if (snapshot.connectionState == ConnectionState.waiting) {
+        //   return const Center(child: CircularProgressIndicator());
+        // } else if (snapshot.hasError) {
+        //   return Text('Error: ${snapshot.error}');
+        // } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+        //   return const Text('No cards found');
+        // }
 
-            return DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: "Select Card",
-                border: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(12)),
-                ),
-                filled: true,
-                fillColor: AppColors.grayColor,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: context.dynamicWidth(0.01),
-                  vertical: context.dynamicHeight(0.02),
-                ),
-              ),
-              value: selectedCardNumber,
-              hint: const Text("Please select a card"),
-              onChanged: (String? newValue) {
-                setState(() {
-                  selectedCardNumber = newValue;
-                });
-              },
-              items: userCards.map((Map<String, dynamic> card) {
-                return DropdownMenuItem<String>(
-                  value: card['accountNumber'],
-                  child: Text('${card['holderName']} - ${card['bankName']}'),
-                );
-              }).toList(),
-            );
+        // List<Map<String, dynamic>> userCards = snapshot.data!;
+
+        return DropdownButtonFormField<String>(
+          decoration: InputDecoration(
+            labelText: "Select Card",
+            border: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+            ),
+            filled: true,
+            fillColor: AppColors.grayColor,
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: context.dynamicWidth(0.01),
+              vertical: context.dynamicHeight(0.02),
+            ),
+          ),
+          value: selectedCardNumber,
+          hint: const Text("Please select a card"),
+          onChanged: (String? newValue) {
+            selectedCardNumber = newValue;
           },
+          items: cardController.userCards.map((Map<String, dynamic> card) {
+            return DropdownMenuItem<String>(
+              value: card['cardNumber'],
+              child: Text('${card['holderName']} - ${card['bankName']}'),
+            );
+          }).toList(),
         );
       },
     );
@@ -182,7 +185,8 @@ class _AddTransactionState extends State<AddTransaction> {
       onPressed: () {
         setState(() {
           if (transaction_value.isNotEmpty) {
-            transaction_value = transaction_value.substring(0, transaction_value.length - 1);
+            transaction_value =
+                transaction_value.substring(0, transaction_value.length - 1);
           }
         });
       },
@@ -210,13 +214,45 @@ class _AddTransactionState extends State<AddTransaction> {
               );
               return;
             }
+            if (widget.type == "outgoing") {
+              await transactionController.getBalance(selectedCardNumber!);
+              double? currentBalance = transactionController.balance;
+              print("selectedCardNumber ${selectedCardNumber}");
 
+              print("currentBalance ${currentBalance}");
+              if (currentBalance == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content:
+                        Text("Failed to retrieve balance. Please try again."),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+
+              // تحويل قيمة العملية
+              double transactionAmount =
+                  double.tryParse(transaction_value) ?? 0.0;
+
+              if (currentBalance < transactionAmount) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                        'Insufficient balance! Your balance is \$${currentBalance.toStringAsFixed(2)}'),
+                    backgroundColor: Colors.red[700],
+                    showCloseIcon: true,
+                  ),
+                );
+                return;
+              }
+            }
             await transactionController
                 .addTransaction(
-                  cardNumber: selectedCardNumber!, 
-                  type: widget.type, 
-                  value: transaction_value, 
-                )
+              cardNumber: selectedCardNumber!,
+              type: widget.type,
+              value: transaction_value,
+            )
                 .whenComplete(() {
               const snackBar = SnackBar(
                 content: Text("Transaction added successfully!"),
@@ -224,18 +260,20 @@ class _AddTransactionState extends State<AddTransaction> {
                 backgroundColor: Colors.green,
               );
               ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              
+
               Navigator.pop(context);
             });
           },
           color: AppColors.darkBlueColor,
           minWidth: context.dynamicWidth(0.6),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           child: Padding(
             padding: context.paddingVerticalDefault,
             child: Text(
               "Add Transaction",
-              style: context.textTheme.titleLarge?.copyWith(color: AppColors.whiteColor),
+              style: context.textTheme.titleLarge
+                  ?.copyWith(color: AppColors.whiteColor),
             ),
           ),
         );

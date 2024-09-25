@@ -40,18 +40,18 @@ class _CardDetailState extends State<CardDetail> {
               "HolderName": selectedCard['holderName'].toString(),
               "CardName": selectedCard['cardName'].toString(),
               "BankName": selectedCard['bankName'].toString(),
-              "Account": selectedCard['accountNumber'].toString(),
+              "cardNumber": selectedCard['cardNumber'].toString(),
               "Status": selectedCard['status'].toString(),
               "Valid": selectedCard['validDates'].toString(),
             };
           });
               Provider.of<CardStateNotifier>(context, listen: false)
-                .updateCard(selectedCard['cardName']);
+                .updateCardName(selectedCard['cardName']);
             Provider.of<CardStateNotifier>(context, listen: false)
-                .updateCardNumber(selectedCard['accountNumber']);
+                .updateCardNumber(selectedCard['cardNumber']);
                 
-            Provider.of<TransactionController>(context, listen: false)
-                  .getBalance( selectedCard['accountNumber'],);
+            // Provider.of<TransactionController>(context, listen: false)
+            //       .getBalance( selectedCard['cardNumber'],);
         } catch (e) {
           print('Card not found: $e');
         }
@@ -147,18 +147,18 @@ class _CardDetailState extends State<CardDetail> {
               "HolderName": selectedCard['holderName'].toString(),
               "CardName": selectedCard['cardName'].toString(),
               "BankName": selectedCard['bankName'].toString(),
-              "Account": selectedCard['accountNumber'].toString(),
+              "cardNumber": selectedCard['cardNumber'].toString(),
               "Status": selectedCard['status'].toString(),
               "Valid": selectedCard['validDates'].toString(),
             };
 
             Provider.of<CardStateNotifier>(context, listen: false)
-                .updateCard(selectedCard['cardName']);
+                .updateCardName(selectedCard['cardName']);
             Provider.of<CardStateNotifier>(context, listen: false)
-                .updateCardNumber(selectedCard['accountNumber']);
+                .updateCardNumber(selectedCard['cardNumber']);
                 
             Provider.of<TransactionController>(context, listen: false)
-                  .getBalance( selectedCard['accountNumber'],);
+                  .getBalance( selectedCard['cardNumber'],);
           });
         },
         items: userCards.map<DropdownMenuItem<String>>((Map<String, dynamic> card) {
@@ -191,10 +191,10 @@ class _CardDetailState extends State<CardDetail> {
   return TextButton(
    onPressed: () async {
   if (selectedCardInfo != null) {
-    String accountNumber = selectedCardInfo!['Account'];
+    String cardNumber = selectedCardInfo!['cardNumber'];
 
     try {
-      await Provider.of<CardController>(context, listen: false).deleteCard(context, accountNumber);
+      await Provider.of<CardController>(context, listen: false).deleteCard(context, cardNumber);
       
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

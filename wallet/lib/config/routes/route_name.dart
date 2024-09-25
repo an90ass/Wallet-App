@@ -6,6 +6,7 @@ class RouteNames {
   static const String cardDetail = '/card-detail';
   static const String addTransaction = '/add-transaction ';
   static const String transfer = '/transfer ';
+  static const String payments = '/payments';
 
 
 

@@ -166,6 +166,9 @@ class Wallet extends StatelessWidget {
         case "Transfer":
         Navigator.pushNamed(context, RouteNames.transfer);
         break;
+        case "Payment":
+        Navigator.pushNamed(context, RouteNames.payments);
+        break;
       default:
         break;
     }

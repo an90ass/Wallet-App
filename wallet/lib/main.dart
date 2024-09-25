@@ -13,7 +13,9 @@ import 'package:wallet/firebase_options.dart';
 import 'package:wallet/my_app.dart';
 import 'package:wallet/features/repository/user_repository.dart';
 
+import 'features/controller/payment_controller.dart';
 import 'features/controller/transactio_controller.dart';
+import 'features/repository/payment_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,6 +69,26 @@ void main() async {
           create: (context) => TransactionController(transactionRepository: Provider.of<TransactionRepository>(context, listen: false)),
           update: (context, transactionRepository, transactionController) => TransactionController(transactionRepository: transactionRepository),
         ),
+    Provider<PaymentRepository>(
+      create: (context) => PaymentRepository(
+        auth: FirebaseAuth.instance,
+        firestore: FirebaseFirestore.instance,
+      ),
+    ),
+        ChangeNotifierProxyProvider<PaymentRepository, PaymentController>(
+      create: (context) => PaymentController(
+        paymentRepository: Provider.of<PaymentRepository>(context, listen: false),
+      ),
+      update: (context, paymentRepository, paymentController) =>
+          PaymentController(paymentRepository: paymentRepository),
+          
+    ),
+        
+    ChangeNotifierProvider(
+      create: (context) => PaymentController(
+        paymentRepository: Provider.of<PaymentRepository>(context, listen: false),
+      ),
+    ),
       ],
       child: MyApp(),
     ),

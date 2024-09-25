@@ -12,7 +12,7 @@ class UserController with ChangeNotifier {
     required String userName,
   }) async {
     await userRepository.createUser(email: email, password: password, userName: userName);
-    notifyListeners(); // Notify listeners when user is created
+    notifyListeners(); 
   }
 
   Future<void> signIn({
@@ -20,6 +20,9 @@ class UserController with ChangeNotifier {
     required String password,
   }) async {
     await userRepository.signIn(email: email, password: password);
-    notifyListeners(); // Notify listeners when user is signed in
+    notifyListeners(); 
+  }
+  Future<void> getUserUidByEmail()async{
+    await userRepository.getUserUidsByEmail();
   }
 }

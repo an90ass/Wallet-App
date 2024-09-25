@@ -4,6 +4,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:wallet/features/payment/views/payment.dart';
 
 import '../../features/auth/views/sign_in.dart';
 import '../../features/auth/views/sign_up.dart';
@@ -35,7 +36,8 @@ class AppRouter{
       return MaterialPageRoute(builder: (context)=> AddTransaction(type: type,));
       case RouteNames.transfer:
       return MaterialPageRoute(builder: (context)=>Transfer());
-      case RouteNames.addTransaction:
+      case RouteNames.payments:
+      return MaterialPageRoute(builder: (context)=>Payments());
       default:
         return MaterialPageRoute(builder: (_) =>  SignIn());
     }

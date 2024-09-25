@@ -16,7 +16,7 @@ class _AddCardState extends State<AddCard> {
   final CardModel card = CardModel(
     holderName: "", 
     bankName: "", 
-    accountNumber: "", 
+    cardNumber: "", 
     validDates: "",
   );
   String? selectedDate;
@@ -161,7 +161,7 @@ class _AddCardState extends State<AddCard> {
   Widget buildAccountNumberField() {
     return TextFormField(
       decoration: InputDecoration(
-        labelText: "Account Number",
+        labelText: "Card Number",
         hintText: "Enter account number",
         border: OutlineInputBorder(),
         filled: true,
@@ -174,7 +174,7 @@ class _AddCardState extends State<AddCard> {
         return null;
       },
       onSaved: (String? value) {
-        card.accountNumber = value!;
+        card.cardNumber = value!;
       },
     );
   }
@@ -260,7 +260,7 @@ class _AddCardState extends State<AddCard> {
             cardController.addCard(
               holderName: card.holderName,
               bankName: card.bankName,
-              accountNumber: card.accountNumber,
+              cardNumber: card.cardNumber,
               validDates: card.validDates,
               status: card.status ?? 'Active',
               context: context

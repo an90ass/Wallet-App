@@ -10,7 +10,7 @@ class CardRepository {
   Future<void> addCard({
     required String holderName,
     required String bankName,
-    required String accountNumber,
+    required String cardNumber,
     required String status,
     required String validDates,
   }) async {
@@ -21,11 +21,11 @@ class CardRepository {
             .collection("users")
             .doc(currentUser.uid)
             .collection("cards")
-            .doc(accountNumber)
+            .doc(cardNumber)
             .set({
           "holderName": holderName,
           "bankName": bankName,
-          "accountNumber": accountNumber,
+          "cardNumber": cardNumber,
           "status": status,
           "validDates": validDates,
           "cardName": "$holderName - $bankName",
@@ -38,41 +38,46 @@ class CardRepository {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchUserCards() async {
-    try {
-      User? currentUser = auth.currentUser;
+Future<List<Map<String, dynamic>>> fetchUserCards() async {
+  try {
+    User? currentUser = auth.currentUser;
 
-      if (currentUser == null) {
-        throw Exception("No authenticated user found.");
-      }
-
-      QuerySnapshot snapshot = await firestore
-          .collection('users')
-          .doc(currentUser.uid)
-          .collection('cards')
-          .get();
-
-      return snapshot.docs.map((doc) {
-        return {
-          "cardName": doc['cardName'],
-          "holderName": doc['holderName'],
-          "bankName": doc['bankName'],
-          "accountNumber": doc["accountNumber"],
-          "status": doc['status'],
-          "validDates": doc['validDates'],
-        };
-      }).toList();
-    } catch (e) {
-      throw Exception("Error fetching cards: $e");
+    if (currentUser == null) {
+      throw Exception("No authenticated user found.");
     }
+
+    QuerySnapshot snapshot = await firestore
+        .collection('users')
+        .doc(currentUser.uid)
+        .collection('cards')
+        .get();
+
+    return snapshot.docs.map((doc) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+      return {
+        "cardName": data.containsKey('cardName')
+            ? data['cardName']
+            : "${data['holderName']} - ${data['bankName']}",
+        "holderName": data['holderName'],
+        "bankName": data['bankName'],
+        "cardNumber": data["cardNumber"],
+        "status": data['status'],
+        "validDates": data['validDates'],
+      };
+    }).toList();
+  } catch (e) {
+    throw Exception("Error fetching cards: $e");
   }
-  Future<void> deleteCard({required String accountNumber})async {
+}
+
+  Future<void> deleteCard({required String cardNumber})async {
     try{
       User? currentUser = auth.currentUser;
   if (currentUser == null) {
         throw Exception("No authenticated user found.");
       }
-       await firestore.collection('users').doc(currentUser.uid).collection('cards').doc(accountNumber).delete();
+       await firestore.collection('users').doc(currentUser.uid).collection('cards').doc(cardNumber).delete();
       
 
     }catch(e){

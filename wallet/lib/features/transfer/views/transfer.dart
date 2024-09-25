@@ -91,8 +91,8 @@ class TransferState extends State<Transfer> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: (){
-    // final uiToTransfer = Provider.of<UserController>(context, listen: false);
-    // uiToTransfer.getUserUidByEmail(_emailController.text);
+    final uiToTransfer = Provider.of<UserController>(context, listen: false);
+    uiToTransfer.getUserUidByEmail();
                   },
                   child: Text('Send Money'),
                 ),
@@ -104,10 +104,5 @@ class TransferState extends State<Transfer> {
     );
   }
 
-  @override
-  void dispose() {
-    _amountController.dispose();
-    _emailController.dispose();
-    super.dispose();
-  }
+ 
 }

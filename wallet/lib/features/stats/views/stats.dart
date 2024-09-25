@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:wallet/config/extensions/context_extension.dart';
 import 'package:wallet/config/items/app_colors.dart';
 import 'package:wallet/config/utility/enums/image_enum.dart';
-import '../controller/card_controller.dart';
+import 'package:wallet/features/controller/transactio_controller.dart';
+import '../../controller/card_controller.dart';
 
 class Stats extends StatefulWidget {
   @override
@@ -15,7 +16,7 @@ class Stats extends StatefulWidget {
 class StatsState extends State<Stats> {
   int _currentIndex = 0;
   late PageController _pageController;
-  List<Map<String, dynamic>>? _userCards; // المتغير لتخزين البطاقات
+  List<Map<String, dynamic>>? _userCards; 
   bool _isLoading = true;
   String? _errorMessage;
 
@@ -23,7 +24,7 @@ class StatsState extends State<Stats> {
   void initState() {
     super.initState();
     _pageController = PageController(viewportFraction: 0.7);
-    _loadUserCards(); // استدعاء الدالة لتحميل البطاقات
+    _loadUserCards(); 
   }
 
   Future<void> _loadUserCards() async {
@@ -138,6 +139,23 @@ class StatsState extends State<Stats> {
             ),
           ),
         ),
+              Padding(
+  padding: context.paddingTopDefault,
+  child: Consumer<TransactionController>(
+    builder: (context, transactionController, child) {
+      transactionController.getBalance(userCards[_currentIndex]['cardNumber']);
+      final cardBalance = transactionController.balance.toStringAsFixed(2);
+      return Text('\$ ${cardBalance}',
+      style: context.textTheme.bodyMedium?.copyWith(
+        color: AppColors.lightPurpleColor,
+        fontSize: 30,
+        fontWeight: FontWeight.bold
+      ),);
+    },
+  ),
+)
+
+
       ],
     );
   }

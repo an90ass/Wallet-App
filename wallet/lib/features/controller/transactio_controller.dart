@@ -45,9 +45,9 @@ class TransactionController extends ChangeNotifier {
       _balance = 0.0;
     }
 
-    print(_balance);
-    print(cardNumber);
+    // print(_balance);
+    // print(cardNumber);
 
-    notifyListeners(); // تحديث الـ UI
+    notifyListeners(); 
   }
 }

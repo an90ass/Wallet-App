@@ -5,13 +5,15 @@ import 'package:wallet/features/repository/card_reopsitory.dart';
 
 class CardController extends ChangeNotifier {
   final CardRepository cardRepository;
+  List<Map<String, dynamic>> _userCards = [];
+  List<Map<String, dynamic>> get userCards => _userCards;
 
   CardController({required this.cardRepository});
 
  Future<void> addCard({
     required String holderName,
     required String bankName,
-    required String accountNumber,
+    required String cardNumber,
     required String validDates,
     required String status,
     required BuildContext context,
@@ -19,7 +21,7 @@ class CardController extends ChangeNotifier {
     await cardRepository.addCard(
       holderName: holderName,
       bankName: bankName,
-      accountNumber: accountNumber,
+      cardNumber: cardNumber,
       status: status,
       validDates: validDates,
     );
@@ -28,35 +30,37 @@ class CardController extends ChangeNotifier {
 
     if (userCards.isNotEmpty) {
       final newCard = userCards.last;
-      Provider.of<CardStateNotifier>(context, listen: false).updateCard(newCard["cardName"]);
+      Provider.of<CardStateNotifier>(context, listen: false).updateCardName(newCard["cardName"]);
     }
 
     notifyListeners();
   }
-  Future<List<Map<String, dynamic>>> fetchUserCards() async {
-    return await cardRepository.fetchUserCards();
+Future<List<Map<String, dynamic>>> fetchUserCards() async {
+    _userCards = await cardRepository.fetchUserCards();
+    notifyListeners();
+    return _userCards;
   }
 
 
   
-Future<void> deleteCard(BuildContext context, String accountNumber) async {
+Future<void> deleteCard(BuildContext context, String cardNumber) async {
   try {
-    await cardRepository.deleteCard(accountNumber: accountNumber);
+    await cardRepository.deleteCard(cardNumber: cardNumber);
 
     List<Map<String, dynamic>> updatedCards = await fetchUserCards();
 
     if (updatedCards.isNotEmpty) {
       // Update the selected card and recalculate the balance
       final newCard = updatedCards.first;
-      String newCardNumber = newCard["accountNumber"];
-      Provider.of<CardStateNotifier>(context, listen: false).updateCard(newCard["cardName"]);
+      String newCardNumber = newCard["cardNumber"];
+      Provider.of<CardStateNotifier>(context, listen: false).updateCardName(newCard["cardName"]);
       Provider.of<CardStateNotifier>(context, listen: false).updateCardNumber(newCardNumber);
       
       // Recalculate the balance for the new card
       await Provider.of<TransactionController>(context, listen: false).getBalance(newCardNumber);
     } else {
       // If no cards are left, reset the balance and card information
-      Provider.of<CardStateNotifier>(context, listen: false).updateCard('No Cards Available');
+      Provider.of<CardStateNotifier>(context, listen: false).updateCardName('No Cards Available');
       Provider.of<CardStateNotifier>(context, listen: false).updateCardNumber('');
       await Provider.of<TransactionController>(context, listen: false).getBalance("");
     }
@@ -77,7 +81,7 @@ class CardStateNotifier extends ChangeNotifier {
   String get cardName => _cardName;
   String get cardNumber => _carNumber;
 
-  void updateCard(String newCardName) {
+  void updateCardName(String newCardName) {
     _cardName = newCardName;
     notifyListeners();
   }

@@ -42,4 +42,31 @@ class UserRepository {
       throw Exception("Error signing in: ${e.toString()}");
     }
   }
+
+Future<void> getUserUidsByEmail() async {
+  try {
+    print('Starting Firestore query...');
+    
+    QuerySnapshot userSnapshot = await firestore.collection('users').get();
+
+    print('Query completed, number of documents: ${userSnapshot.docs.length}');
+    
+    if (userSnapshot.docs.isEmpty) {
+      print('No documents found.');
+    } else {
+      userSnapshot.docs.forEach((doc) {
+        print('Document ID: ${doc.id}');
+      });
+    }
+  } catch (e) {
+    print('Error fetching document IDs: $e');
+  }
 }
+
+
+
+
+}
+
+
+

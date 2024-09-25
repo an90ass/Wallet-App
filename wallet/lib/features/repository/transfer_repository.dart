@@ -7,34 +7,32 @@
 
 //   TransferRepository({required this.firestore, required this.auth});
 
-//   // التحقق من رصيد المستخدم
-//   Future<double> getUserBalance(String uid) async {
-//     try {
-//       DocumentSnapshot documentSnapshot = await firestore
-//           .collection('users')
-//           .doc(uid)
-//           .collection('Account info')
-//           .doc('balance')
-//           .get();
+// Future<double> getUserBalance(String uid, String cardNumber) async {
+//   try {
+//     DocumentSnapshot documentSnapshot = await firestore
+//         .collection('users')
+//         .doc(uid)
+//         .collection('cards')
+//         .doc(cardNumber)
+//         .get();
 
-//       if (documentSnapshot.exists) {
-//         return documentSnapshot['balance'] as double;
-//       } else {
-//         throw Exception("Balance not found for user: $uid");
-//       }
-//     } catch (e) {
-//       throw Exception("Error fetching balance: $e");
+//     if (documentSnapshot.exists) {
+//       return documentSnapshot['balance'] as double; 
+//     } else {
+//       throw Exception("Balance not found for user: $uid and card: $cardNumber");
 //     }
+//   } catch (e) {
+//     throw Exception("Error fetching balance: $e");
 //   }
+// }
 
-//   // إتمام التحويل بين المستخدمين
+
 //   Future<void> transferMoney({
 //     required String senderUid,
 //     required String receiverUid,
 //     required double amount,
 //   }) async {
 //     try {
-//       // التحقق من رصيد المرسل
 //       double senderBalance = await getUserBalance(senderUid);
 
 //       if (senderBalance < amount) {
