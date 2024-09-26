@@ -14,6 +14,18 @@ enum ImageEnum {
   wallet("wallet"),
   signIn("sign_in"),
   signUp("sign_up_new"),
+  amazonpay("amazonpay"),
+  applepay("applepay"),
+  googlepay("googlepay"),
+  mastercard("mastercard"),
+  netflex("netflex"),
+  paypal("paypal"),
+  stripe("stripe"),
+  visa("visa"),
+
+
+
+
 
   // Add new image enum here
   horizontalCard("horizontal_card"),

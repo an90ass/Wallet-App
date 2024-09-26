@@ -6,6 +6,13 @@ class PaymentController extends ChangeNotifier {
 
   bool _isProcessing = false;
   bool get isProcessing => _isProcessing;
+  List<Map<String, dynamic>> _payments = [];
+  List<Map<String, dynamic>> get payments => _payments;
+  String? _errorMessage;
+    bool _isLoading = false;
+  String? get errorMessage => _errorMessage;
+
+  bool get isLoading => _isLoading;
 
   PaymentController({required this.paymentRepository});
 
@@ -35,4 +42,19 @@ class PaymentController extends ChangeNotifier {
       throw Exception("Error adding payment: $e"); 
     }
   }
+Future<void> fetchUserPayments(String cardNumber) async {
+    _isLoading = true;
+    _errorMessage = null;
+
+    try {
+      List<Map<String, dynamic>> payments = await paymentRepository.fetchUserPayments(cardNumber);
+      _payments = payments;
+    } catch (e) {
+      _errorMessage = "Error fetching payments: $e";
+    }
+
+    _isLoading = false;
+    notifyListeners(); 
+  }
+
 }

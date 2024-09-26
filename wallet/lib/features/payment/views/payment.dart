@@ -14,7 +14,12 @@ class Payments extends StatefulWidget {
 class _PaymentsState extends State<Payments> {
   String _balance = "0.00";
   final _formKey = GlobalKey<FormState>();
-  final paymentModel = PaymentModel(cardNumber: '', paymentTitle: '', paymentDescription: '', amount: '', paymentMethod: '');
+  final paymentModel = PaymentModel(
+      cardNumber: '',
+      paymentTitle: '',
+      paymentDescription: '',
+      amount: '',
+      paymentMethod: '');
 
   final List<Map<String, dynamic>> quickMenuItems = [
     {
@@ -75,27 +80,29 @@ class _PaymentsState extends State<Payments> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 20),
                 const Text(
                   "Make a Payment",
                   style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.darkBlueColor),
                 ),
                 const SizedBox(height: 20),
                 buildBalanceField(context),
-                const SizedBox(height: 20),
-                buildCardsField(context),
-                const SizedBox(height: 20),
+                const SizedBox(height: 50),
                 buildPaymentTitleField(),
                 const SizedBox(height: 20),
-                buildPaymentDescriptionField(),
+                buildCardsField(context),
                 const SizedBox(height: 20),
                 buildAmountField(),
                 const SizedBox(height: 20),
                 buildPaymentMethodField(),
-                const SizedBox(height: 40),
+                const SizedBox(height: 20),
+                buildPaymentDescriptionField(),
+                const SizedBox(height: 50),
                 buildSubmitButton(context),
+             
               ],
             ),
           ),
@@ -108,10 +115,10 @@ class _PaymentsState extends State<Payments> {
     return Text(
       'Balance: \$$_balance',
       style: const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: AppColors.lightPurpleColor,
-      ),
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: AppColors.lightPurpleColor,
+          fontStyle: FontStyle.italic),
     );
   }
 
@@ -129,10 +136,12 @@ class _PaymentsState extends State<Payments> {
           icon: const Icon(Icons.arrow_drop_down_circle_outlined),
           decoration: InputDecoration(
             labelText: "Select Card",
+            labelStyle: TextStyle(color: Colors.grey[600]),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
             ),
-            prefixIcon: const Icon(Icons.credit_card, color: AppColors.darkPurpleColor),
+            prefixIcon:
+                const Icon(Icons.credit_card, color: AppColors.darkPurpleColor),
           ),
           items: cardController.userCards.map<DropdownMenuItem<String>>((card) {
             return DropdownMenuItem<String>(
@@ -168,6 +177,9 @@ class _PaymentsState extends State<Payments> {
       decoration: InputDecoration(
         hintText: "Enter payment title",
         labelText: "Payment Title",
+        labelStyle: TextStyle(color: Colors.grey[600]),
+        hintStyle:
+            TextStyle(fontStyle: FontStyle.italic, color: Colors.grey[600]),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -191,10 +203,14 @@ class _PaymentsState extends State<Payments> {
       decoration: InputDecoration(
         hintText: "Enter amount",
         labelText: "Amount",
+        labelStyle: TextStyle(color: Colors.grey[600]),
+        hintStyle:
+            TextStyle(fontStyle: FontStyle.italic, color: Colors.grey[600]),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        prefixIcon: const Icon(Icons.attach_money, color: AppColors.darkPurpleColor),
+        prefixIcon:
+            const Icon(Icons.attach_money, color: AppColors.darkPurpleColor),
       ),
       onSaved: (String? value) {
         paymentModel.amount = value!;
@@ -213,6 +229,7 @@ class _PaymentsState extends State<Payments> {
       icon: const Icon(Icons.arrow_drop_down_circle_outlined),
       decoration: InputDecoration(
         labelText: "Payment Method",
+        labelStyle: TextStyle(color: Colors.grey[600]),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -240,15 +257,23 @@ class _PaymentsState extends State<Payments> {
         return null;
       },
     );
-  }  Widget buildPaymentDescriptionField() {
+  }
+
+  Widget buildPaymentDescriptionField() {
     return TextFormField(
+      maxLines: null,
+      minLines: 6,
       decoration: InputDecoration(
         hintText: "Enter payment description",
         labelText: "Payment Description",
+        labelStyle: TextStyle(color: Colors.grey[600]),
+        hintStyle:
+            TextStyle(fontStyle: FontStyle.italic, color: Colors.grey[600]),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        prefixIcon: const Icon(Icons.description, color: AppColors.darkPurpleColor),
+        prefixIcon:
+            const Icon(Icons.description, color: AppColors.darkPurpleColor),
       ),
       onSaved: (String? value) {
         paymentModel.paymentDescription = value!;
@@ -271,17 +296,20 @@ class _PaymentsState extends State<Payments> {
 
             getCardNumber(context);
 
-            final transactionController = Provider.of<TransactionController>(context, listen: false);
+            final transactionController =
+                Provider.of<TransactionController>(context, listen: false);
             try {
               await transactionController.getBalance(paymentModel.cardNumber);
               double currentBalance = transactionController.balance;
 
-              double paymentAmount = double.tryParse(paymentModel.amount) ?? 0.0;
+              double paymentAmount =
+                  double.tryParse(paymentModel.amount) ?? 0.0;
 
               if (currentBalance < paymentAmount) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Insufficient balance! Your balance is \$${currentBalance.toStringAsFixed(2)}'),
+                    content: Text(
+                        'Insufficient balance! Your balance is \$${currentBalance.toStringAsFixed(2)}'),
                     backgroundColor: Colors.red[700],
                     showCloseIcon: true,
                   ),
@@ -289,7 +317,8 @@ class _PaymentsState extends State<Payments> {
                 return;
               }
 
-              final paymentController = Provider.of<PaymentController>(context, listen: false);
+              final paymentController =
+                  Provider.of<PaymentController>(context, listen: false);
               await paymentController.addPayment(
                 cardNumber: paymentModel.cardNumber,
                 paymentTitle: paymentModel.paymentTitle,
@@ -335,7 +364,8 @@ class _PaymentsState extends State<Payments> {
   }
 
   void updateBalance(BuildContext context, String cardNumber) async {
-    final transactionController = Provider.of<TransactionController>(context, listen: false);
+    final transactionController =
+        Provider.of<TransactionController>(context, listen: false);
     await transactionController.getBalance(cardNumber);
     setState(() {
       _balance = transactionController.balance.toStringAsFixed(2);
