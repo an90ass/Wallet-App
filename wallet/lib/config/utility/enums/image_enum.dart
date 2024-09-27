@@ -14,13 +14,13 @@ enum ImageEnum {
   wallet("wallet"),
   signIn("sign_in"),
   signUp("sign_up_new"),
-  amazonpay("amazonpay"),
-  applepay("applepay"),
+  amazonpay("amazonPay2"),
+  applepay("apple_pay"),
   googlepay("googlepay"),
   mastercard("mastercard"),
-  netflex("netflex"),
+  netflex("netflex2"),
   paypal("paypal"),
-  stripe("stripe"),
+  stripe("stripe2"),
   visa("visa"),
 
 

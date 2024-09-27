@@ -1,6 +1,8 @@
 // import 'dart:js';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wallet/config/extensions/context_extension.dart';
@@ -9,6 +11,7 @@ import 'package:wallet/config/routes/route_name.dart';
 import 'package:wallet/config/utility/enums/image_enum.dart';
 import 'package:wallet/features/controller/card_controller.dart';
 
+import '../../controller/payment_controller.dart';
 import '../../controller/transactio_controller.dart';
 
 class Wallet extends StatelessWidget {
@@ -30,12 +33,49 @@ class Wallet extends StatelessWidget {
       "svgPath": ImageEnum.topup.svgPath,
     },
   ];
+    final List<Map<String, dynamic>> listViewItems = [
+    {
+      "title": "NetFlex",
+      "icon": ImageEnum.netflex.imagePath,
+    },
+    {
+      "title": "PayPal",
+      "icon": ImageEnum.paypal.imagePath,
+    },
+    {
+      "title": "Visa",
+      "icon": ImageEnum.visa.imagePath,
+    },
+    {
+      "title": "MasterCard",
+      "icon": ImageEnum.mastercard.imagePath, 
+    },
+    {
+      "title": "Apple Pay",
+      "icon": ImageEnum.applepay.imagePath, 
+    },
+    {
+      "title": "Google Pay",
+      "icon": ImageEnum.googlepay.imagePath, 
+    },
+    {
+      "title": "Stripe",
+      "icon": ImageEnum.stripe.imagePath,
+    },
+    {
+      "title": "Amazon Pay",
+      "icon": ImageEnum.amazonpay.imagePath, 
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
     final selectedCardName = Provider.of<CardStateNotifier>(context).cardName; 
     final selectedCardNumber = Provider.of<CardStateNotifier>(context).cardNumber; 
-
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<PaymentController>(context, listen: false)
+          .fetchUserPayments(selectedCardNumber);
+    });
     return Scaffold(
       body: SafeArea(
         bottom: false,
@@ -100,42 +140,95 @@ class Wallet extends StatelessWidget {
                   ),
                 ],
               ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: 20,
-                  itemBuilder: (BuildContext context, int index) {
-                    return ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(
-                        "Payment",
-                        style: context.textTheme.labelMedium?.copyWith(
-                            color: AppColors.blackColor,
-                            fontSize: context.dynamicHeight(0.02),
-                            fontWeight: FontWeight.w400),
-                      ),
-                      subtitle: Text(
-                        "Payment Description",
-                        style: context.textTheme.bodyMedium?.copyWith(
-                            color: AppColors.subtitleColor,
-                            fontSize: context.dynamicHeight(0.02),
-                            fontWeight: FontWeight.w400),
-                      ),
-                      trailing: Text(
-                        "\$ 12",
-                        style: context.textTheme.labelMedium?.copyWith(
-                            color: AppColors.darkBlueColor,
-                            fontSize: context.dynamicHeight(0.02),
-                            fontWeight: FontWeight.w400),
-                      ),
-                      leading: CircleAvatar(
-                        radius: context.dynamicWidth(0.08),
-                        backgroundImage:
-                            AssetImage(ImageEnum.profilePicture.imagePath),
-                      ),
-                    );
-                  },
+
+               Expanded(
+      child: Consumer<PaymentController>(
+        builder: (context, paymentController, child) {
+          if (paymentController.isLoading) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (paymentController.errorMessage != null) {
+            return Center(child: Text(paymentController.errorMessage!));
+          }
+
+          if (paymentController.payments.isEmpty) {
+                        return buildNoPaymentsFoundMessaj(context);
+
+          }
+
+          return ListView.builder(
+            itemCount: paymentController.payments.length,
+            itemBuilder: (BuildContext context, int index) {
+              final payment = paymentController.payments[index];
+              final paymentTitle = payment['paymentMethod'];
+
+              final paymentIcon = listViewItems.firstWhere(
+                (element) => element['title'] == paymentTitle,
+                orElse: () => {"icon": ImageEnum.profilePicture.imagePath},
+              )['icon'];
+
+              return ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  payment['paymentTitle'] ?? "Payment",
+                  style: context.textTheme.labelMedium?.copyWith(
+                    color: AppColors.blackColor,
+                    fontSize: context.dynamicHeight(0.023),
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-              ),
+                subtitle: Text(
+                  payment['paymentDescription'] ?? "Payment Description",
+                  style: context.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.subtitleColor,
+                    fontSize: context.dynamicHeight(0.02),
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                trailing: Column(children: [
+                  Text(
+                    "\$${payment['amount'] ?? "0"}",
+                    style: context.textTheme.labelMedium?.copyWith(
+                      color: AppColors.darkBlueColor,
+                      fontSize: context.dynamicHeight(0.02),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 3.0),
+                    child: Text(
+                      _formatTimestamp(payment['timestamp']),
+                      style: context.textTheme.bodySmall?.copyWith(
+                        color: Colors.grey[700],
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ),
+                  
+                ]),
+                leading: CircleAvatar(
+                  radius: context.dynamicWidth(0.08),
+                  backgroundImage: AssetImage(paymentIcon),
+                ),
+                // leading: ClipRRect(
+                //   borderRadius:
+                //       BorderRadius.circular(context.dynamicWidth(0.08)),
+                //   child: Image.asset(
+                //     paymentIcon,
+                //     fit: BoxFit.cover,
+                //     width: context.dynamicWidth(0.16),
+                //     height: context.dynamicWidth(0.16),
+                //   ),
+                // ),
+              );
+            },
+          );
+        },
+      ),
+    )
             ],
           ),
         ),
@@ -264,9 +357,57 @@ class Wallet extends StatelessWidget {
   );
 }
 
+ Widget buildNoPaymentsFoundMessaj(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: context.dynamicHeight(0.1)),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.warning_amber_rounded,
+            color: AppColors.lightPurpleColor,
+            size: 80,
+          ),
+          SizedBox(height: context.dynamicHeight(0.02)),
+          Text(
+            'No payments found',
+            style: context.textTheme.titleLarge?.copyWith(
+              color: AppColors.titleColor,
+              fontWeight: FontWeight.bold,
+              fontSize: context.dynamicHeight(0.03),
+            ),
+          ),
+          SizedBox(height: context.dynamicHeight(0.01)),
+          Text(
+            'It seems like there are no payments available yet.',
+            style: context.textTheme.bodyMedium?.copyWith(
+              color: AppColors.subtitleColor,
+              fontSize: context.dynamicHeight(0.02),
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }}
+ String _formatTimestamp(dynamic timestamp) {
+    if (timestamp == null) {
+      return "No Date";
+    }
 
-}
+    DateTime date;
+    if (timestamp is Timestamp) {
+      date = timestamp.toDate();
+    } else if (timestamp is DateTime) {
+      date = timestamp;
+    } else {
+      return "Invalid Date";
+    }
 
+    String formattedDate = DateFormat('yyyy-MM-dd HH:mm').format(date);
+
+    return formattedDate;
+  }
 class QuickMenuItem extends StatelessWidget {
   final String title;
   final String svgPath;

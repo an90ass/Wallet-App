@@ -48,6 +48,13 @@ Future<void> fetchUserPayments(String cardNumber) async {
 
     try {
       List<Map<String, dynamic>> payments = await paymentRepository.fetchUserPayments(cardNumber);
+      payments.sort((a, b) {
+      DateTime dateA = a['timestamp'].toDate();
+      DateTime dateB = b['timestamp'].toDate();
+      return dateB.compareTo(dateA);
+    });
+
+    _payments = payments;
       _payments = payments;
     } catch (e) {
       _errorMessage = "Error fetching payments: $e";

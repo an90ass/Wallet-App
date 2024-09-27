@@ -10,6 +10,7 @@ class PaymentRepository {
     required this.firestore,
   });
 
+
   Future<void> addPayment({
     required String cardNumber,
     required String paymentTitle,
@@ -25,7 +26,26 @@ class PaymentRepository {
         return Future.error(Exception("No authenticated user found."));
       }
 
-      await firestore.collection("users")
+      DocumentSnapshot cardSnapshot = await firestore
+          .collection("users")
+          .doc(currentUser.uid)
+          .collection("cards")
+          .doc(cardNumber)
+          .get();
+
+      if (!cardSnapshot.exists) {
+        return Future.error(Exception("Card not found."));
+      }
+
+      double balance = cardSnapshot.get('balance');
+      double paymentAmount = double.tryParse(amount) ?? 0.0;
+
+      if (balance < paymentAmount) {
+        return Future.error(Exception("Insufficient balance."));
+      }
+ // add balance
+      await firestore
+          .collection("users")
           .doc(currentUser.uid)
           .collection("cards")
           .doc(cardNumber)
@@ -41,6 +61,17 @@ class PaymentRepository {
       });
 
       print("Payment saved successfully.");
+
+      double newBalance = balance - paymentAmount;
+
+      await firestore
+          .collection("users")
+          .doc(currentUser.uid)
+          .collection("cards")
+          .doc(cardNumber)
+          .update({"balance": newBalance});
+
+      print("Balance updated successfully. New Balance: $newBalance");
     } catch (e) {
       print("Error saving payment: $e");
       return Future.error(e);
@@ -77,7 +108,6 @@ Future<List<Map<String, dynamic>>> fetchUserPayments(String selectedCardNumber) 
       });
     }
 
-    // Convert the data to a list of maps
     List<Map<String, dynamic>> payments = querySnapshot.docs
         .map((doc) => doc.data())
         .toList();

@@ -296,20 +296,20 @@ class StatsState extends State<Stats> {
                     ),
                   ),
                 ]),
-                // leading: CircleAvatar(
-                //   radius: context.dynamicWidth(0.08),
-                //   backgroundImage: AssetImage(paymentIcon),
-                // ),
-                leading: ClipRRect(
-                  borderRadius:
-                      BorderRadius.circular(context.dynamicWidth(0.08)),
-                  child: Image.asset(
-                    paymentIcon,
-                    fit: BoxFit.cover,
-                    width: context.dynamicWidth(0.16),
-                    height: context.dynamicWidth(0.16),
-                  ),
+                leading: CircleAvatar(
+                  radius: context.dynamicWidth(0.08),
+                  backgroundImage: AssetImage(paymentIcon),
                 ),
+                // leading: ClipRRect(
+                //   borderRadius:
+                //       BorderRadius.circular(context.dynamicWidth(0.08)),
+                //   child: Image.asset(
+                //     paymentIcon,
+                //     fit: BoxFit.cover,
+                //     width: context.dynamicWidth(0.16),
+                //     height: context.dynamicWidth(0.16),
+                //   ),
+                // ),
               );
             },
           );
