@@ -252,37 +252,54 @@ class _AddCardState extends State<AddCard> {
     return Padding(
       padding: EdgeInsets.only(top: context.dynamicHeight(0.02)),
       child: ElevatedButton(
-        onPressed: () {
+        onPressed: ()async {
           if (_formKey.currentState!.validate()) {
             _formKey.currentState!.save();
 
-            final cardController = Provider.of<CardController>(context, listen: false);
+                      final cardController = Provider.of<CardController>(context, listen: false);
 
-            cardController.addCard(
-              holderName: card.holderName,
-              bankName: card.bankName,
-              cardNumber: card.cardNumber,
-              validDates: card.validDates,
-              status: card.status ?? 'Active',
-              context: context
-            ).then((_) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("Card added successfully"),
-                  backgroundColor: Colors.green[600],
-                ),
-              );
-            }).catchError((e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("Error: $e"),
-                  backgroundColor: Colors.red[600],
-                ),
-              );
-              
-            });
+          bool cardAdded = await cardController.addCard(
+            holderName: card.holderName,
+            bankName: card.bankName,
+            cardNumber: card.cardNumber,
+            validDates: card.validDates,
+            status: card.status ?? 'Active',
+            context: context,
+          );
+
+          if (!cardAdded) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  icon:  Icon(
+        Icons.warning_amber_rounded,  
+        color: Colors.red,  
+        size: 48,  
+      ),
+                  title: Text("Card Exists"),
+                  content: Text("A card with this number already exists."),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text("OK"),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Card added successfully"),
+                backgroundColor: Colors.green[600],
+              ),
+            );
           }
-        },
+        }
+      },
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.containerColor,
           padding: EdgeInsets.symmetric(

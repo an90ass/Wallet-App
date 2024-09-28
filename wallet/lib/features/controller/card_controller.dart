@@ -10,7 +10,7 @@ class CardController extends ChangeNotifier {
 
   CardController({required this.cardRepository});
 
- Future<void> addCard({
+ Future<bool> addCard({
     required String holderName,
     required String bankName,
     required String cardNumber,
@@ -18,23 +18,32 @@ class CardController extends ChangeNotifier {
     required String status,
     required BuildContext context,
   }) async {
-    await cardRepository.addCard(
-      holderName: holderName,
-      bankName: bankName,
-      cardNumber: cardNumber,
-      status: status,
-      validDates: validDates,
-    );
+     List<Map<String, dynamic>> userCards = await fetchUserCards();
 
-    List<Map<String, dynamic>> userCards = await fetchUserCards();
+  bool cardExists = userCards.any((card) => card['cardNumber'] == cardNumber);
 
-    if (userCards.isNotEmpty) {
-      final newCard = userCards.last;
-      Provider.of<CardStateNotifier>(context, listen: false).updateCardName(newCard["cardName"]);
-    }
-
-    notifyListeners();
+  if (cardExists) {
+    return false;
   }
+
+  await cardRepository.addCard(
+    holderName: holderName,
+    bankName: bankName,
+    cardNumber: cardNumber,
+    status: status,
+    validDates: validDates,
+  );
+
+  userCards = await fetchUserCards();
+
+  if (userCards.isNotEmpty) {
+    final newCard = userCards.last;
+    Provider.of<CardStateNotifier>(context, listen: false).updateCardName(newCard["cardName"]);
+  }
+
+  notifyListeners();
+  return true; // تمت إضافة الكرت بنجاح
+}
 Future<List<Map<String, dynamic>>> fetchUserCards() async {
     _userCards = await cardRepository.fetchUserCards();
     notifyListeners();
