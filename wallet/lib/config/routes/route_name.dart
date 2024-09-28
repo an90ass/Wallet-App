@@ -8,6 +8,7 @@ class RouteNames {
   static const String transfer = '/transfer ';
   static const String payments = '/payments';
   static const String notifications = '/notifications';
+  static const String forgotPassword = '/forgotPassword';
 
 
 

@@ -62,7 +62,20 @@ Future<void> getUserUidsByEmail() async {
     print('Error fetching document IDs: $e');
   }
 }
+Future<String> forgotPassword({required String email}) async {
+  try {
+    final signInMethods = await auth.fetchSignInMethodsForEmail(email);
+    
+    if (signInMethods.isEmpty) {
+      return "No user found with this email.";
+    }
 
+    await auth.sendPasswordResetEmail(email: email);
+    return "Password reset link sent! Check your email.";
+  } on FirebaseAuthException catch (e) {
+    return e.message.toString();
+  }
+}
 
 
 

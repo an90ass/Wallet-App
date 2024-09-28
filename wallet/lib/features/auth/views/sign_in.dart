@@ -192,7 +192,9 @@ final userController = Provider.of<UserController>(context, listen: false);
     return Container(
         alignment: Alignment.centerLeft,
         child: GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(context, RouteNames.forgotPassword);
+            },
             child: InkWell(
               child: Text(
                 "Forget Password ?",

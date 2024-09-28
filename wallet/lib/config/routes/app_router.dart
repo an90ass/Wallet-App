@@ -6,6 +6,7 @@
 import 'package:flutter/material.dart';
 import 'package:wallet/features/payment/views/payment.dart';
 
+import '../../features/auth/views/forgot_password.dart';
 import '../../features/auth/views/sign_in.dart';
 import '../../features/auth/views/sign_up.dart';
 import '../../features/card/views/add_card.dart';
@@ -38,6 +39,9 @@ class AppRouter{
       return MaterialPageRoute(builder: (context)=>Transfer());
       case RouteNames.payments:
       return MaterialPageRoute(builder: (context)=>Payments());
+      case RouteNames.forgotPassword:
+  return MaterialPageRoute(builder: (context) => ForgotPassword());
+
     default:
         return MaterialPageRoute(builder: (_) =>  SignIn());
     }
