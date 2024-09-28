@@ -38,7 +38,7 @@ class AppRouter{
       return MaterialPageRoute(builder: (context)=>Transfer());
       case RouteNames.payments:
       return MaterialPageRoute(builder: (context)=>Payments());
-      default:
+    default:
         return MaterialPageRoute(builder: (_) =>  SignIn());
     }
       

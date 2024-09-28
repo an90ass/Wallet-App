@@ -57,6 +57,7 @@ class StatsState extends State<Stats> {
       "icon": ImageEnum.amazonpay.imagePath, 
     },
   ];
+
   @override
   void initState() {
     super.initState();
@@ -69,6 +70,11 @@ class StatsState extends State<Stats> {
       final cardController =
           Provider.of<CardController>(context, listen: false);
       List<Map<String, dynamic>> cards = await cardController.fetchUserCards();
+      if (cards.isNotEmpty) {
+        final selectedCardNumber = cards[0]['cardNumber'];
+        Provider.of<PaymentController>(context, listen: false)
+            .fetchUserPayments(selectedCardNumber);
+      }
       setState(() {
         _userCards = cards;
         _isLoading = false;
@@ -141,7 +147,7 @@ class StatsState extends State<Stats> {
             padding:
                 EdgeInsets.symmetric(horizontal: context.dynamicWidth(0.02)),
             child: Image.asset(
-              userCards[index]['imagePath'] ??
+              userCards[index]['imagePath'] ?? 
                   ImageEnum.horizontalCard.imagePath,
             ),
           );
@@ -300,16 +306,6 @@ class StatsState extends State<Stats> {
                   radius: context.dynamicWidth(0.08),
                   backgroundImage: AssetImage(paymentIcon),
                 ),
-                // leading: ClipRRect(
-                //   borderRadius:
-                //       BorderRadius.circular(context.dynamicWidth(0.08)),
-                //   child: Image.asset(
-                //     paymentIcon,
-                //     fit: BoxFit.cover,
-                //     width: context.dynamicWidth(0.16),
-                //     height: context.dynamicWidth(0.16),
-                //   ),
-                // ),
               );
             },
           );

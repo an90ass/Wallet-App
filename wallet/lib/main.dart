@@ -6,8 +6,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wallet/features/controller/card_controller.dart';
+import 'package:wallet/features/controller/notification_controller.dart';
 import 'package:wallet/features/controller/user_controller.dart';
 import 'package:wallet/features/repository/card_reopsitory.dart';
+import 'package:wallet/features/repository/notifications_repository.dart';
 import 'package:wallet/features/repository/transaction_repository.dart';  
 import 'package:wallet/firebase_options.dart';
 import 'package:wallet/my_app.dart';
@@ -19,6 +21,7 @@ import 'features/repository/payment_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // await LocalNotifications.init();
   
   // Initialize Firebase
   await Firebase.initializeApp(
@@ -87,6 +90,18 @@ void main() async {
     ChangeNotifierProvider(
       create: (context) => PaymentController(
         paymentRepository: Provider.of<PaymentRepository>(context, listen: false),
+      ),
+    ),
+
+     Provider<NotificationRepository>(
+          create: (_) => NotificationRepository(
+            auth: FirebaseAuth.instance,
+            firestore: FirebaseFirestore.instance,
+          ),
+        ),
+         ChangeNotifierProvider(
+      create: (context) => NotificationController(
+        notificationRepository: Provider.of<NotificationRepository>(context, listen: false),
       ),
     ),
       ],

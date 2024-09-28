@@ -59,6 +59,7 @@ class _AddCardState extends State<AddCard> {
               buildForm(context),
               buildText(context),
               buildSubmitButton(context),
+
             ],
           ),
         ),
@@ -278,6 +279,7 @@ class _AddCardState extends State<AddCard> {
                   backgroundColor: Colors.red[600],
                 ),
               );
+              
             });
           }
         },
@@ -301,4 +303,7 @@ class _AddCardState extends State<AddCard> {
       ),
     );
   }
-}
+  
+ }
+
+    

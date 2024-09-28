@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:wallet/config/extensions/context_extension.dart';
 import 'package:wallet/features/controller/card_controller.dart';
 import '../../../config/items/app_colors.dart';
+import '../../controller/notification_controller.dart';
 import '../../controller/transactio_controller.dart';
 
 class AddTransaction extends StatefulWidget {
@@ -199,85 +200,190 @@ class _AddTransactionState extends State<AddTransaction> {
       ),
     );
   }
-
   Widget _buildSubmitButton(BuildContext context) {
-    return Consumer<TransactionController>(
-      builder: (context, transactionController, child) {
-        return MaterialButton(
-          onPressed: () async {
-            if (selectedCardNumber == null) {
+  return Consumer<TransactionController>(
+    builder: (context, transactionController, child) {
+      return MaterialButton(
+        onPressed: () async {
+          if (selectedCardNumber == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Please select a card"),
+                backgroundColor: Colors.red,
+              ),
+            );
+            return;
+          }
+
+          if (widget.type == "outgoing") {
+            await transactionController.getBalance(selectedCardNumber!);
+            double? currentBalance = transactionController.balance;
+
+            if (currentBalance == null) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text("Please select a card"),
+                  content: Text("Failed to retrieve balance. Please try again."),
                   backgroundColor: Colors.red,
                 ),
               );
               return;
             }
-            if (widget.type == "outgoing") {
-              await transactionController.getBalance(selectedCardNumber!);
-              double? currentBalance = transactionController.balance;
-              print("selectedCardNumber ${selectedCardNumber}");
 
-              print("currentBalance ${currentBalance}");
-              if (currentBalance == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content:
-                        Text("Failed to retrieve balance. Please try again."),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-                return;
-              }
+            double transactionAmount = double.tryParse(transaction_value) ?? 0.0;
 
-              // تحويل قيمة العملية
-              double transactionAmount =
-                  double.tryParse(transaction_value) ?? 0.0;
-
-              if (currentBalance < transactionAmount) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                        'Insufficient balance! Your balance is \$${currentBalance.toStringAsFixed(2)}'),
-                    backgroundColor: Colors.red[700],
-                    showCloseIcon: true,
-                  ),
-                );
-                return;
-              }
+            if (currentBalance < transactionAmount) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                      'Insufficient balance! Your balance is \$${currentBalance.toStringAsFixed(2)}'),
+                  backgroundColor: Colors.red[700],
+                  showCloseIcon: true,
+                ),
+              );
+              return;
             }
-            await transactionController
-                .addTransaction(
-              cardNumber: selectedCardNumber!,
-              type: widget.type,
-              value: transaction_value,
-            )
-                .whenComplete(() {
-              const snackBar = SnackBar(
-                content: Text("Transaction added successfully!"),
+          }
+
+          await transactionController.addTransaction(
+            cardNumber: selectedCardNumber!,
+            type: widget.type,
+            value: transaction_value,
+          );
+// to send notification
+          try {
+            final notificationController =
+                Provider.of<NotificationController>(context, listen: false);
+
+            String notificationMessage = ""; 
+
+            if (widget.type == "income") {
+              notificationMessage =
+                  "You have received an amount of $transaction_value dollars from card number $selectedCardNumber.";
+            } else if (widget.type == "outgoing") {
+              notificationMessage =
+                  "You have withdrawn an amount of $transaction_value dollars from card number $selectedCardNumber.";
+            }
+
+            // إضافة الإشعار إلى قاعدة البيانات
+            await notificationController.addNotificationTodb(
+              widget.type,
+              notificationMessage,
+            );
+
+            // بعد حفظ الإشعار، عرض رسالة نجاح
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Transaction and notification added successfully!"),
                 duration: Duration(seconds: 3),
                 backgroundColor: Colors.green,
-              );
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              ),
+            );
 
-              Navigator.pop(context);
-            });
-          },
-          color: AppColors.darkBlueColor,
-          minWidth: context.dynamicWidth(0.6),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          child: Padding(
-            padding: context.paddingVerticalDefault,
-            child: Text(
-              "Add Transaction",
-              style: context.textTheme.titleLarge
-                  ?.copyWith(color: AppColors.whiteColor),
-            ),
+            Navigator.pop(context);
+          } catch (e) {
+            print(e);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Failed to save notification."),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        color: AppColors.darkBlueColor,
+        minWidth: context.dynamicWidth(0.6),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        child: Padding(
+          padding: context.paddingVerticalDefault,
+          child: Text(
+            "Add Transaction",
+            style:
+                context.textTheme.titleLarge?.copyWith(color: AppColors.whiteColor),
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
+
+
+  // Widget _buildSubmitButton(BuildContext context) {
+  //   return Consumer<TransactionController>(
+  //     builder: (context, transactionController, child) {
+  //       return MaterialButton(
+  //         onPressed: () async {
+  //           if (selectedCardNumber == null) {
+  //             ScaffoldMessenger.of(context).showSnackBar(
+  //               const SnackBar(
+  //                 content: Text("Please select a card"),
+  //                 backgroundColor: Colors.red,
+  //               ),
+  //             );
+  //             return;
+  //           }
+  //           if (widget.type == "outgoing") {
+  //             await transactionController.getBalance(selectedCardNumber!);
+  //             double? currentBalance = transactionController.balance;
+  //             print("selectedCardNumber ${selectedCardNumber}");
+
+  //             print("currentBalance ${currentBalance}");
+  //             if (currentBalance == null) {
+  //               ScaffoldMessenger.of(context).showSnackBar(
+  //                 const SnackBar(
+  //                   content:
+  //                       Text("Failed to retrieve balance. Please try again."),
+  //                   backgroundColor: Colors.red,
+  //                 ),
+  //               );
+  //               return;
+  //             }
+
+  //             double transactionAmount =
+  //                 double.tryParse(transaction_value) ?? 0.0;
+
+  //             if (currentBalance < transactionAmount) {
+  //               ScaffoldMessenger.of(context).showSnackBar(
+  //                 SnackBar(
+  //                   content: Text(
+  //                       'Insufficient balance! Your balance is \$${currentBalance.toStringAsFixed(2)}'),
+  //                   backgroundColor: Colors.red[700],
+  //                   showCloseIcon: true,
+  //                 ),
+  //               );
+  //               return;
+  //             }
+  //           }
+  //           await transactionController
+  //               .addTransaction(
+  //             cardNumber: selectedCardNumber!,
+  //             type: widget.type,
+  //             value: transaction_value,
+  //           )
+  //               .whenComplete(() {
+  //             const snackBar = SnackBar(
+  //               content: Text("Transaction added successfully!"),
+  //               duration: Duration(seconds: 3),
+  //               backgroundColor: Colors.green,
+  //             );
+  //             ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+  //             Navigator.pop(context);
+  //           });
+  //         },
+  //         color: AppColors.darkBlueColor,
+  //         minWidth: context.dynamicWidth(0.6),
+  //         shape:
+  //             RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+  //         child: Padding(
+  //           padding: context.paddingVerticalDefault,
+  //           child: Text(
+  //             "Add Transaction",
+  //             style: context.textTheme.titleLarge
+  //                 ?.copyWith(color: AppColors.whiteColor),
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 }

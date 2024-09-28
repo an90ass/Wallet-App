@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wallet/features/controller/notification_controller.dart';
 import 'package:wallet/features/controller/payment_controller.dart';
 import 'package:wallet/features/controller/transactio_controller.dart';
 import '../../../config/items/app_colors.dart';
@@ -12,6 +13,9 @@ class Payments extends StatefulWidget {
 }
 
 class _PaymentsState extends State<Payments> {
+
+
+    
   String _balance = "0.00";
   final _formKey = GlobalKey<FormState>();
   final paymentModel = PaymentModel(
@@ -102,7 +106,7 @@ class _PaymentsState extends State<Payments> {
                 buildPaymentDescriptionField(),
                 const SizedBox(height: 50),
                 buildSubmitButton(context),
-             
+               
               ],
             ),
           ),
@@ -287,81 +291,105 @@ class _PaymentsState extends State<Payments> {
     );
   }
 
-  Widget buildSubmitButton(BuildContext context) {
-    return Center(
-      child: ElevatedButton.icon(
-        onPressed: () async {
-          if (_formKey.currentState!.validate()) {
-            _formKey.currentState!.save();
+ Widget buildSubmitButton(BuildContext context) {
+  return Center(
+    child: ElevatedButton.icon(
+      onPressed: () async {
+        if (_formKey.currentState!.validate()) {
+          _formKey.currentState!.save();
 
-            getCardNumber(context);
+          getCardNumber(context);
 
-            final transactionController =
-                Provider.of<TransactionController>(context, listen: false);
-            try {
-              await transactionController.getBalance(paymentModel.cardNumber);
-              double currentBalance = transactionController.balance;
+          final transactionController =
+              Provider.of<TransactionController>(context, listen: false);
+          try {
+            await transactionController.getBalance(paymentModel.cardNumber);
+            double currentBalance = transactionController.balance;
 
-              double paymentAmount =
-                  double.tryParse(paymentModel.amount) ?? 0.0;
+            double paymentAmount = double.tryParse(paymentModel.amount) ?? 0.0;
 
-              if (currentBalance < paymentAmount) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                        'Insufficient balance! Your balance is \$${currentBalance.toStringAsFixed(2)}'),
-                    backgroundColor: Colors.red[700],
-                    showCloseIcon: true,
-                  ),
-                );
-                return;
-              }
-
-              final paymentController =
-                  Provider.of<PaymentController>(context, listen: false);
-              await paymentController.addPayment(
-                cardNumber: paymentModel.cardNumber,
-                paymentTitle: paymentModel.paymentTitle,
-                paymentDescription: paymentModel.paymentDescription,
-                amount: paymentModel.amount,
-                paymentMethod: paymentModel.paymentMethod,
-              );
-
+            if (currentBalance < paymentAmount) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Payment Submitted Successfully!'),
-                  backgroundColor: Colors.green[700],
+                  content: Text(
+                      'Insufficient balance! Your balance is \$${currentBalance.toStringAsFixed(2)}'),
+                  backgroundColor: Colors.red[700],
                   showCloseIcon: true,
                 ),
               );
-            } catch (error) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Failed to submit payment: $error')),
-              );
+              return;
             }
+
+            final paymentController =
+                Provider.of<PaymentController>(context, listen: false);
+            await paymentController.addPayment(
+              cardNumber: paymentModel.cardNumber,
+              paymentTitle: paymentModel.paymentTitle,
+              paymentDescription: paymentModel.paymentDescription,
+              amount: paymentModel.amount,
+              paymentMethod: paymentModel.paymentMethod,
+            );
+
+           
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Payment Submitted Successfully!'),
+                backgroundColor: Colors.green[700],
+                showCloseIcon: true,
+              ),
+            );
+
+            // // جدولة الإشعار ليظهر في صفحة الإشعارات فقط
+            // LocalNotifications.showSimpleNotification(
+            //   title: "Payment Successful",
+            //   body:
+            //       "Payment of \$${paymentModel.amount} to ${paymentModel.paymentTitle} via ${paymentModel.paymentMethod} has been processed successfully.",
+            //   payload:
+            //       "Payment Details: Card Number - ${paymentModel.cardNumber}, Amount - \$${paymentModel.amount}",
+            // );
+
+          } catch (error) {
+            print(error);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Failed to submit payment: $error')),
+            );
           }
-        },
-        icon: const Icon(
-          Icons.payment,
-          color: AppColors.whiteColor,
+          try{
+             final notificationController =
+                Provider.of<NotificationController>(context, listen: false);
+           await notificationController.addNotificationTodb(
+  paymentModel.paymentTitle,
+  "You Spent \$${paymentModel.amount} for ${paymentModel.paymentTitle} using your ${paymentModel.cardNumber} card number by ${paymentModel.paymentMethod} ",
+);
+
+          }catch(e){
+print(e);
+          }
+        }
+      },
+      icon: const Icon(
+        Icons.payment,
+        color: AppColors.whiteColor,
+      ),
+      label: const Text(
+        "Submit Payment",
+        style: TextStyle(fontSize: 18, color: AppColors.whiteColor),
+      ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.darkPurpleColor,
+        padding: const EdgeInsets.symmetric(
+          vertical: 15.0,
+          horizontal: 30.0,
         ),
-        label: const Text(
-          "Submit Payment",
-          style: TextStyle(fontSize: 18, color: AppColors.whiteColor),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.darkPurpleColor,
-          padding: const EdgeInsets.symmetric(
-            vertical: 15.0,
-            horizontal: 30.0,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   void updateBalance(BuildContext context, String cardNumber) async {
     final transactionController =

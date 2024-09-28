@@ -77,6 +77,42 @@ class Wallet extends StatelessWidget {
           .fetchUserPayments(selectedCardNumber);
     });
     return Scaffold(
+      appBar: AppBar(
+    backgroundColor: Colors.white, 
+        automaticallyImplyLeading:false,
+         actions: [
+    Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Row(
+        children: [
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.pushNamed(context, RouteNames.addCard);
+            },
+            icon: Icon(
+              Icons.add_card_outlined,
+              color: Colors.white,
+            ),
+            label: Text(
+              "Add new card",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              primary: AppColors.containerColor,
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8), 
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),   
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  ],
+      ),
       body: SafeArea(
         bottom: false,
         child: Padding(
@@ -233,14 +269,7 @@ class Wallet extends StatelessWidget {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, RouteNames.addCard);
-        },
-        child: Icon(Icons.add),
-        backgroundColor: AppColors.containerColor,
-        splashColor: AppColors.whiteColor,
-      ),
+     
     );
   }
 

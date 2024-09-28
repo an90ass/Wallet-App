@@ -45,9 +45,8 @@ class TransactionController extends ChangeNotifier {
       _balance = 0.0;
     }
 
-    // print(_balance);
-    // print(cardNumber);
-
-    notifyListeners(); 
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+   // });
   }
 }

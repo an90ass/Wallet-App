@@ -75,7 +75,7 @@ Future<void> deleteCard(BuildContext context, String cardNumber) async {
 
 }
 class CardStateNotifier extends ChangeNotifier {
-  String _cardName = 'No avalibale card select or add new card';
+  String _cardName = 'No avalibale card select card';
   String _carNumber= 'Card Number';
 
   String get cardName => _cardName;
