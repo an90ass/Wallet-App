@@ -10,13 +10,15 @@ import 'package:wallet/features/controller/notification_controller.dart';
 import 'package:wallet/features/controller/user_controller.dart';
 import 'package:wallet/features/repository/card_reopsitory.dart';
 import 'package:wallet/features/repository/notifications_repository.dart';
-import 'package:wallet/features/repository/transaction_repository.dart';  
+import 'package:wallet/features/repository/transaction_repository.dart';
+import 'package:wallet/features/repository/transfer_repository.dart';  
 import 'package:wallet/firebase_options.dart';
 import 'package:wallet/my_app.dart';
 import 'package:wallet/features/repository/user_repository.dart';
 
 import 'features/controller/payment_controller.dart';
 import 'features/controller/transactio_controller.dart';
+import 'features/controller/transfer_controller.dart';
 import 'features/repository/payment_repository.dart';
 
 void main() async {
@@ -102,6 +104,18 @@ void main() async {
          ChangeNotifierProvider(
       create: (context) => NotificationController(
         notificationRepository: Provider.of<NotificationRepository>(context, listen: false),
+      ),
+    ),
+     Provider<TransferRepository>(
+          create: (_) => TransferRepository(
+            auth: FirebaseAuth.instance,
+            firestore: FirebaseFirestore.instance,
+          ),
+          
+        ),
+          ChangeNotifierProvider(
+      create: (context) => TransferController(
+        transferRepository: Provider.of<TransferRepository>(context, listen: false),
       ),
     ),
       ],

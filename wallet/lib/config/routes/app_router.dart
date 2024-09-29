@@ -12,6 +12,9 @@ import '../../features/auth/views/sign_up.dart';
 import '../../features/card/views/add_card.dart';
 import '../../features/card/views/card_detail.dart';
 import '../../features/home/views/views/home.dart';
+import '../../features/settings/views/log_in_settings.dart';
+import '../../features/settings/views/profile_settings.dart';
+import '../../features/settings/views/service_center.dart';
 import '../../features/transaction/views/add_transaction.dart';
 import '../../features/transfer/views/transfer.dart';
 import 'route_name.dart';
@@ -40,7 +43,13 @@ class AppRouter{
       case RouteNames.payments:
       return MaterialPageRoute(builder: (context)=>Payments());
       case RouteNames.forgotPassword:
-  return MaterialPageRoute(builder: (context) => ForgotPassword());
+      return MaterialPageRoute(builder: (context) => ForgotPassword());
+      case RouteNames.profileSettings:
+       return MaterialPageRoute(builder: (context) => ProdileSettings());
+       case RouteNames.loginSettings:
+  return MaterialPageRoute(builder: (context) => LoginInSettings());
+    case RouteNames.serviceCenter:
+  return MaterialPageRoute(builder: (context) => ServiceCenter());
 
     default:
         return MaterialPageRoute(builder: (_) =>  SignIn());

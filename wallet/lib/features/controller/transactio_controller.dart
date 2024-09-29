@@ -3,13 +3,14 @@ import 'package:wallet/features/repository/transaction_repository.dart';
 
 class TransactionController extends ChangeNotifier {
   final TransactionRepository transactionRepository;
+    TransactionController({required this.transactionRepository});
+
   String? _currentCardNumber;
   String? get currentCardNumber => _currentCardNumber;
   double _balance = 0.0;
 
   double get balance => _balance;
 
-  TransactionController({required this.transactionRepository});
 
   Future<void> addTransaction({
     required String cardNumber,

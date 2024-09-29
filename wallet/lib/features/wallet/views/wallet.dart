@@ -78,7 +78,6 @@ class Wallet extends StatelessWidget {
     });
     return Scaffold(
       appBar: AppBar(
-    backgroundColor: Colors.white, 
         automaticallyImplyLeading:false,
          actions: [
     Padding(
@@ -397,7 +396,6 @@ class Wallet extends StatelessWidget {
             color: AppColors.lightPurpleColor,
             size: 80,
           ),
-          SizedBox(height: context.dynamicHeight(0.02)),
           Text(
             'No payments found',
             style: context.textTheme.titleLarge?.copyWith(

@@ -38,4 +38,10 @@ class NotificationController extends ChangeNotifier {
       print("Failed to delete notification: $e");
     }
   }
+
+  void markNotificationsAsRead() {
+    hasNewNotifications = false;
+    notifyListeners(); // Ensure the UI is updated
+  }
 }
+

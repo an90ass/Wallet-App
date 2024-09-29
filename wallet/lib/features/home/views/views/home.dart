@@ -8,6 +8,7 @@ import 'package:wallet/features/notifications/views/notifications.dart';
 import 'package:wallet/features/stats/views/stats.dart';
 import 'package:wallet/features/wallet/views/wallet.dart';
 import 'package:wallet/features/controller/notification_controller.dart';
+import 'package:wallet/features/settings/views/settings.dart';
 
 import '../../../../config/routes/route_name.dart';
 
@@ -23,7 +24,7 @@ class _HomeState extends State<Home> {
     Wallet(),
     Stats(),
     NotificationsPage(),
-    const Text('3'),
+    Settings(),
   ];
 
   int _selectedIndex = 0;
@@ -32,7 +33,7 @@ class _HomeState extends State<Home> {
     setState(() {
       _selectedIndex = index;
       if (index == 2) {
-        Provider.of<NotificationController>(context, listen: false).hasNewNotifications = false;
+      Provider.of<NotificationController>(context, listen: false).markNotificationsAsRead();
       }
     });
   }

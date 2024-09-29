@@ -1,100 +1,79 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-// class TransferRepository {
-//   final FirebaseFirestore firestore;
-//   final FirebaseAuth auth;
+class TransferRepository {
+  final FirebaseFirestore firestore;
+  final FirebaseAuth auth;
 
-//   TransferRepository({required this.firestore, required this.auth});
+  TransferRepository({required this.firestore, required this.auth});
+Future<void> transferAmount({
+    required String firstCardNumber,
+    required String secondCardNumber,
+    required double amount,
+  }) async {
+    User? currentUser = auth.currentUser;
 
-// Future<double> getUserBalance(String uid, String cardNumber) async {
-//   try {
-//     DocumentSnapshot documentSnapshot = await firestore
-//         .collection('users')
-//         .doc(uid)
-//         .collection('cards')
-//         .doc(cardNumber)
-//         .get();
+    if (currentUser == null) {
+      throw Exception("No authenticated user found.");
+    }
 
-//     if (documentSnapshot.exists) {
-//       return documentSnapshot['balance'] as double; 
-//     } else {
-//       throw Exception("Balance not found for user: $uid and card: $cardNumber");
-//     }
-//   } catch (e) {
-//     throw Exception("Error fetching balance: $e");
-//   }
-// }
+    try {
+      double firstCardBalance = await getBalance(firstCardNumber);
 
+      if (firstCardBalance < amount) {
+        throw Exception("Insufficient balance in the first card.");
+      }
 
-//   Future<void> transferMoney({
-//     required String senderUid,
-//     required String receiverUid,
-//     required double amount,
-//   }) async {
-//     try {
-//       double senderBalance = await getUserBalance(senderUid);
+      double secondCardBalance = await getBalance(secondCardNumber);
 
-//       if (senderBalance < amount) {
-//         throw Exception("Insufficient balance");
-//       }
+      double updatedFirstCardBalance = firstCardBalance - amount;
 
-//       // بدء المعاملة لتحديث الأرصدة والمعاملات
-//       await firestore.runTransaction((transaction) async {
-//         // تحديث رصيد المرسل
-//         DocumentReference senderRef = firestore
-//             .collection('users')
-//             .doc(senderUid)
-//             .collection('Account info')
-//             .doc('balance');
+      double updatedSecondCardBalance = secondCardBalance + amount;
 
-//         transaction.update(senderRef, {
-//           'balance': senderBalance - amount,
-//         });
+      await updateBalance(firstCardNumber, updatedFirstCardBalance);
+      await updateBalance(secondCardNumber, updatedSecondCardBalance);
 
-//         // تحديث رصيد المستلم
-//         double receiverBalance = await getUserBalance(receiverUid);
-//         DocumentReference receiverRef = firestore
-//             .collection('users')
-//             .doc(receiverUid)
-//             .collection('Account info')
-//             .doc('balance');
+    
+    } catch (e) {
+      throw Exception("Failed to transfer amount: ${e.toString()}");
+    }
+  }
 
-//         transaction.update(receiverRef, {
-//           'balance': receiverBalance + amount,
-//         });
+  Future<double> getBalance(String cardNumber) async {
+    User? currentUser = auth.currentUser;
 
-//         // تسجيل التحويل لكل من المرسل والمستلم
-//         DocumentReference senderTransactionRef = firestore
-//             .collection('users')
-//             .doc(senderUid)
-//             .collection('transactions')
-//             .doc();
+    if (currentUser == null) {
+      return Future.error(Exception("No authenticated user found."));
+    }
 
-//         transaction.set(senderTransactionRef, {
-//           'type': 'sent',
-//           'amount': amount,
-//           'to': receiverUid,
-//           'date': Timestamp.now(),
-//         });
+    DocumentSnapshot<Map<String, dynamic>> cardDoc = await firestore
+        .collection("users")
+        .doc(currentUser.uid)
+        .collection("cards")
+        .doc(cardNumber)
+        .get();
 
-//         DocumentReference receiverTransactionRef = firestore
-//             .collection('users')
-//             .doc(receiverUid)
-//             .collection('transactions')
-//             .doc();
+    if (cardDoc.exists) {
+      double balance = cardDoc.data()?["balance"]?.toDouble() ?? 0.0;
+      return balance;
+    } else {
+      return Future.error(Exception("Card not found."));
+    }
+  }
 
-//         transaction.set(receiverTransactionRef, {
-//           'type': 'received',
-//           'amount': amount,
-//           'from': senderUid,
-//           'date': Timestamp.now(),
-//         });
-//       });
+  Future<void> updateBalance(String cardNumber, double newBalance) async {
+    User? currentUser = auth.currentUser;
 
-//       print("Transfer successful");
-//     } catch (e) {
-//       throw Exception("Error during transfer: $e");
-//     }
-//   }
-// }
+    if (currentUser != null) {
+      await firestore
+          .collection("users")
+          .doc(currentUser.uid)
+          .collection("cards")
+          .doc(cardNumber)
+          .set({
+        "balance": newBalance,
+      }, SetOptions(merge: true));
+    }
+  }
+
+}

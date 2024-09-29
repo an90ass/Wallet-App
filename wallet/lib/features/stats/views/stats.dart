@@ -334,7 +334,7 @@ class StatsState extends State<Stats> {
               fontSize: context.dynamicHeight(0.03),
             ),
           ),
-          SizedBox(height: context.dynamicHeight(0.01)),
+          // SizedBox(height: context.dynamicHeight(0.01)),
           Text(
             'It seems like there are no payments available yet.',
             style: context.textTheme.bodyMedium?.copyWith(

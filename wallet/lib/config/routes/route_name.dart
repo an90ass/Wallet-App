@@ -9,6 +9,9 @@ class RouteNames {
   static const String payments = '/payments';
   static const String notifications = '/notifications';
   static const String forgotPassword = '/forgotPassword';
+  static const String profileSettings = '/profileSettings';
+  static const String loginSettings = '/loginSettings';
+  static const String serviceCenter = '/serviceCenter';
 
 
 
