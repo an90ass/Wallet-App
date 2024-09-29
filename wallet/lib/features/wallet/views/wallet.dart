@@ -305,7 +305,7 @@ class Wallet extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Wallet",
+          "Walletly",
           style: context.textTheme.headlineMedium?.copyWith(
               color: AppColors.titleColor,
               fontWeight: FontWeight.bold,
