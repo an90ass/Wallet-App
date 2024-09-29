@@ -10,6 +10,7 @@ import 'package:wallet/config/items/app_colors.dart';
 import 'package:wallet/config/routes/route_name.dart';
 import 'package:wallet/config/utility/enums/image_enum.dart';
 import 'package:wallet/features/controller/card_controller.dart';
+import 'package:wallet/features/controller/user_controller.dart';
 
 import '../../controller/payment_controller.dart';
 import '../../controller/transactio_controller.dart';
@@ -124,7 +125,8 @@ class Wallet extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     buildTitleAndSubtitle(context),
-                    buildAvatar(context),
+                    //  buildAvatar(context),
+                    buildPictuerAvatar(context)
                   ],
                 ),
               ),
@@ -164,15 +166,15 @@ class Wallet extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         fontSize: context.dynamicHeight(0.027)),
                   ),
-                  TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      "See All",
-                      style: context.textTheme.bodyMedium?.copyWith(
-                          color: AppColors.lightPurpleColor,
-                          fontSize: context.dynamicHeight(0.027)),
-                    ),
-                  ),
+                  // TextButton(
+                  //   onPressed: () {},
+                  //   child: Text(
+                  //     "See All",
+                  //     style: context.textTheme.bodyMedium?.copyWith(
+                  //         color: AppColors.lightPurpleColor,
+                  //         fontSize: context.dynamicHeight(0.027)),
+                  //   ),
+                  // ),
                 ],
               ),
 
@@ -244,7 +246,8 @@ class Wallet extends StatelessWidget {
                   ),
                   
                 ]),
-                leading: CircleAvatar(
+                leading: 
+                CircleAvatar(
                   radius: context.dynamicWidth(0.08),
                   backgroundImage: AssetImage(paymentIcon),
                 ),
@@ -316,12 +319,12 @@ class Wallet extends StatelessWidget {
     );
   }
 
-  CircleAvatar buildAvatar(BuildContext context) {
-    return CircleAvatar(
-      radius: context.dynamicWidth(0.08),
-      backgroundImage: AssetImage(ImageEnum.profilePicture.imagePath),
-    );
-  }
+  // CircleAvatar buildAvatar(BuildContext context) {
+  //   return CircleAvatar(
+  //     radius: context.dynamicWidth(0.08),
+  //     backgroundImage: AssetImage(ImageEnum.profilePicture.imagePath),
+  //   );
+  // }
 
  Padding buildCardInfo(BuildContext context, String selectedCardName, String selectedCardNumber) {
   return Padding(
@@ -416,7 +419,31 @@ class Wallet extends StatelessWidget {
         ],
       ),
     );
-  }}
+  }
+  
+ buildPictuerAvatar(BuildContext context) {
+  final userController = Provider.of<UserController>(context, listen: false);
+
+  return FutureBuilder<String?>(
+    future: userController.getProfileImageUrl(), 
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return CircularProgressIndicator(); 
+      } else if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+        return CircleAvatar(
+          radius: 50,
+          backgroundImage: AssetImage('assets/images/profile.png'), 
+        );
+      } else {
+        return CircleAvatar(
+          radius: 50,
+          backgroundImage: NetworkImage(snapshot.data!), 
+        );
+      }
+    },
+  );
+}
+}
  String _formatTimestamp(dynamic timestamp) {
     if (timestamp == null) {
       return "No Date";

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wallet/features/controller/user_controller.dart';
 
+import '../../../config/items/app_colors.dart';
+
 class LoginInSettings extends StatefulWidget {
   @override
   _LoginInSettingsState createState() => _LoginInSettingsState();
@@ -21,10 +23,16 @@ class _LoginInSettingsState extends State<LoginInSettings> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login Settings', style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.deepPurple,
-        elevation: 0,
+      leading: IconButton(
+        icon: const Icon(
+          Icons.arrow_back_ios_new_outlined,
+          color: AppColors.containerColor,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
       ),
+    ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -38,10 +46,10 @@ class _LoginInSettingsState extends State<LoginInSettings> {
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
+                    color: AppColors.titleColor,
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 50),
                 buildCurrentEmailField(context),
                 SizedBox(height: 20),
                 buildNewEmailField(),
@@ -61,11 +69,11 @@ class _LoginInSettingsState extends State<LoginInSettings> {
                       padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                       child: Text(
                         'Save Changes',
-                        style: TextStyle(fontSize: 18),
+                        style: TextStyle(fontSize: 18,color: AppColors.whiteColor),
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.deepPurple,
+                      primary: AppColors.lightPurpleColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),

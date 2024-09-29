@@ -15,7 +15,7 @@ class SignIn extends StatefulWidget {
 class _SignInState extends State<SignIn> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _isPasswordVisible =false;
+  bool _isPasswordVisible = false;
   final _formKey = GlobalKey<FormState>();
   User _user = User(userName: "", password: "", email: "");
   final formKey = GlobalKey<FormState>();
@@ -56,16 +56,16 @@ class _SignInState extends State<SignIn> {
                       ),
                     ),
                     Form(
-                      key: _formKey,
+                        key: _formKey,
                         child: Column(
-                      children: [
-                        buildEmailField(),
-                        buildPasswordField(),
-                        buildSignInButton(),
-                        buildForgetPasswordButton(),
-                        builSignUpButton(),
-                      ],
-                    ))
+                          children: [
+                            buildEmailField(),
+                            buildPasswordField(),
+                            buildSignInButton(),
+                            buildForgetPasswordButton(),
+                            builSignUpButton(),
+                          ],
+                        ))
                   ],
                 ),
               ),
@@ -92,19 +92,19 @@ class _SignInState extends State<SignIn> {
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20),
                 borderSide: BorderSide(color: AppColors.lightPurpleColor))),
-                onSaved: (String? value){
-                  _user.email = value!;
-                },
+        onSaved: (String? value) {
+          _user.email = value!.trim();
+        },
       ),
     );
   }
 
-   Widget buildPasswordField() {
+  Widget buildPasswordField() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: TextFormField(
         controller: _passwordController,
-        obscureText: !_isPasswordVisible, 
+        obscureText: !_isPasswordVisible,
         decoration: InputDecoration(
           labelText: "Password",
           hintText: "Example: 141@aaf3!",
@@ -129,62 +129,58 @@ class _SignInState extends State<SignIn> {
             },
           ),
         ),
-        onSaved: (String? value){
-          _user.password = value!;
+        onSaved: (String? value) {
+          _user.password = value!.trim();
         },
       ),
     );
   }
+
   buildSignInButton() {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical:5),
- 
+      padding: EdgeInsets.symmetric(vertical: 5),
       child: MaterialButton(
-        minWidth: double.infinity,
-        onPressed: () async{
-          if (_formKey.currentState!.validate()) {
-_formKey.currentState!.save();
-final userController = Provider.of<UserController>(context, listen: false);
-          try {
-            await userController.signIn(
-              email: _user.email,
-              password: _user.password,
-            );
+          minWidth: double.infinity,
+          onPressed: () async {
+            if (_formKey.currentState!.validate()) {
+              _formKey.currentState!.save();
+              final userController =
+                  Provider.of<UserController>(context, listen: false);
+              try {
+                await userController.signIn(
+                  email: _user.email,
+                  password: _user.password,
+                );
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Logged in successfully!"),
-                backgroundColor: Colors.green,
-              ),
-            );
-            _emailController.text ="";
-            _passwordController.text ="";
-            Navigator.pushNamed(context, RouteNames.home);
-          } catch (e) {
-            setState(() {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(
-                  "Sign-in failed. Please check your email and password and try again.",
-                ),
-                backgroundColor: Colors.red[700],
-              ));
-            });
-          }
-        }
-      
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Logged in successfully!"),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                _emailController.text = "";
+                _passwordController.text = "";
+                Navigator.pushNamed(context, RouteNames.home);
+              } catch (e) {
+                setState(() {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(
+                      "Sign-in failed. Please check your email and password and try again.",
+                    ),
+                    backgroundColor: Colors.red[700],
+                  ));
+                });
+              }
+            }
           },
-          
-        
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text("Sign in",
-              style: TextStyle(color: AppColors.whiteColor, fontSize: 20)),
-        ),
-        color:  AppColors.lightPurpleColor,
-      
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20))),
-      
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text("Sign in",
+                style: TextStyle(color: AppColors.whiteColor, fontSize: 20)),
+          ),
+          color: AppColors.lightPurpleColor,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
     );
   }
 
@@ -205,24 +201,27 @@ final userController = Provider.of<UserController>(context, listen: false);
               ),
             )));
   }
-  
+
   Widget builSignUpButton() {
     return Padding(
-      padding: const EdgeInsets.only(top:20),
+      padding: const EdgeInsets.only(top: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text("Don't haven't an account ? "),
-          GestureDetector(onTap: (){
-            Navigator.pushNamed(context,RouteNames.signUp);
-          }, child: Text("Sign up",  style: TextStyle(
+          GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, RouteNames.signUp);
+              },
+              child: Text(
+                "Sign up",
+                style: TextStyle(
                     fontSize: 15,
                     fontStyle: FontStyle.italic,
                     fontWeight: FontWeight.bold,
                     color: Colors.grey[600]),
-          ))
+              ))
         ],
-      
       ),
     );
   }

@@ -45,7 +45,7 @@ class AppRouter{
       case RouteNames.forgotPassword:
       return MaterialPageRoute(builder: (context) => ForgotPassword());
       case RouteNames.profileSettings:
-       return MaterialPageRoute(builder: (context) => ProdileSettings());
+       return MaterialPageRoute(builder: (context) => ProfileSettings());
        case RouteNames.loginSettings:
   return MaterialPageRoute(builder: (context) => LoginInSettings());
     case RouteNames.serviceCenter:

@@ -103,7 +103,7 @@ class _SignUpState extends State<SignUp> {
           ),
         ),
         onSaved: (String? value) {
-          _user.email = value!;
+          _user.email = value!.trim();
         },
         validator: (value) {
           if (value == null || value.isEmpty) {
@@ -123,7 +123,7 @@ class _SignUpState extends State<SignUp> {
         obscureText: !_isPasswordVisible,
         decoration: InputDecoration(
           labelText: "Password",
-          hintText: "Example: 141@aaf3!",
+          hintText: "Example: anasAlmaqtari@gmail.com",
           hintStyle: const TextStyle(
             color: Colors.grey,
             fontSize: 14,
@@ -136,7 +136,7 @@ class _SignUpState extends State<SignUp> {
           ),
         ),
         onSaved: (String? value) {
-          _user.password = value!;
+          _user.password = value!.trim();
         },
         validator: (value) {
           if (value == null || value.length < 6) {
@@ -174,8 +174,9 @@ class _SignUpState extends State<SignUp> {
               _emailController.text = "";
               _passwordController.text = "";
               _userNameController.text = "";
-              Navigator.pushNamed(context, RouteNames.signIn);
+              Navigator.pop(context);
             } catch (e) {
+              print("errrrror ${e}");
               setState(() {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text("Sign-up failed..try again."),
@@ -206,7 +207,7 @@ class _SignUpState extends State<SignUp> {
           Text("Don you have an account ? "),
           GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, RouteNames.signIn);
+                Navigator.pop(context);
               },
               child: Text(
                 "Sign in",

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:wallet/features/repository/user_repository.dart';
 
@@ -52,5 +54,43 @@ class UserController with ChangeNotifier {
 
   String? getCurrentUserEmail() {
     return userRepository.getCurrentUserEmail();
+  }
+
+  Future<void> uploadProfileImage(File image) async {
+    await userRepository.uploadProfileImage(image);
+    notifyListeners();
+  }
+
+  Future<String?> getProfileImageUrl() async {
+    return await userRepository.getProfileImageUrl();
+  }
+
+  Future<String?> getUserName() async {
+    return await userRepository.getUserName();
+  }
+
+  Future<void> updateUserName(String newName) async {
+    await userRepository.updateUserName(newName);
+    notifyListeners();
+  }
+
+  Future<void> reauthenticateUser({required String password}) async {
+    try {
+      await userRepository.reauthenticateUser(password: password);
+      notifyListeners();
+    } catch (e) {
+      print('Error: $e');
+      throw Exception('Failed to re-authenticate user: $e');
+    }
+  }
+
+  Future<void> deleteAccount() async {
+    try {
+      await userRepository.deleteAccount();
+      notifyListeners();
+    } catch (e) {
+      print('Error: $e');
+      throw Exception('Failed to delete account: $e');
+    }
   }
 }

@@ -23,6 +23,8 @@ dependencies:
   rxdart: ^0.27.0
   cupertino_icons: ^1.0.2
   device_info_plus: ^8.1.0
+  image_picker: ^0.8.4+4
+  firebase_storage: ^11.6.9
 
 dev_dependencies:
   flutter_test:
@@ -36,6 +38,7 @@ flutter:
   assets:
     - assets/svg/
     - assets/images/
+    - assets/images/profile.png
 
 # flutter_icons:
 #   android: true

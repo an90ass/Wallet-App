@@ -22,6 +22,7 @@ class StatsState extends State<Stats> {
   List<Map<String, dynamic>>? _userCards;
   bool _isLoading = true;
   String? _errorMessage;
+  late ScrollController _scrollController;
 
   final List<Map<String, dynamic>> quickMenuItems = [
     {
@@ -38,15 +39,15 @@ class StatsState extends State<Stats> {
     },
     {
       "title": "MasterCard",
-      "icon": ImageEnum.mastercard.imagePath, 
+      "icon": ImageEnum.mastercard.imagePath,
     },
     {
       "title": "Apple Pay",
-      "icon": ImageEnum.applepay.imagePath, 
+      "icon": ImageEnum.applepay.imagePath,
     },
     {
       "title": "Google Pay",
-      "icon": ImageEnum.googlepay.imagePath, 
+      "icon": ImageEnum.googlepay.imagePath,
     },
     {
       "title": "Stripe",
@@ -54,7 +55,7 @@ class StatsState extends State<Stats> {
     },
     {
       "title": "Amazon Pay",
-      "icon": ImageEnum.amazonpay.imagePath, 
+      "icon": ImageEnum.amazonpay.imagePath,
     },
   ];
 
@@ -62,7 +63,19 @@ class StatsState extends State<Stats> {
   void initState() {
     super.initState();
     _pageController = PageController(viewportFraction: 0.7);
+    _scrollController = ScrollController();
+
     _loadUserCards();
+  }
+
+  void scrollToTop() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        0.0,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
   }
 
   Future<void> _loadUserCards() async {
@@ -147,7 +160,7 @@ class StatsState extends State<Stats> {
             padding:
                 EdgeInsets.symmetric(horizontal: context.dynamicWidth(0.02)),
             child: Image.asset(
-              userCards[index]['imagePath'] ?? 
+              userCards[index]['imagePath'] ??
                   ImageEnum.horizontalCard.imagePath,
             ),
           );
@@ -222,7 +235,7 @@ class StatsState extends State<Stats> {
               fontSize: context.dynamicHeight(0.027)),
         ),
         TextButton(
-          onPressed: () {},
+          onPressed: scrollToTop,
           child: Text(
             "Latest",
             style: context.textTheme.bodyMedium?.copyWith(
@@ -252,6 +265,7 @@ class StatsState extends State<Stats> {
           }
 
           return ListView.builder(
+            controller: _scrollController,
             itemCount: paymentController.payments.length,
             itemBuilder: (BuildContext context, int index) {
               final payment = paymentController.payments[index];

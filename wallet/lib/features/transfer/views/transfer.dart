@@ -268,7 +268,7 @@ class TransferState extends State<Transfer> {
                           isSuccess: true);
                           Provider.of<NotificationController>(context, listen: false)
                         .addNotificationTodb(
-                            'Transfer', 'You have transferred ${_amountController.text} to ${selectedSecondCardName} card name.');
+                            'Transfer', 'You have transferred ${_amountController.text}\$ to ${selectedSecondCardName} card name.');
                     
                       setState(() {
                         selectedFirstCardName = null;

@@ -133,9 +133,11 @@ class _SettingsState extends State<Settings> {
       child: Column(
         children: [
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pop(context);
+            },
             style: ElevatedButton.styleFrom(
-              primary: Colors.transparent,
+              backgroundColor: Colors.transparent,
               elevation: 0,
             ),
             child: Column(

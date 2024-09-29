@@ -1,11 +1,15 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class UserRepository {
   final FirebaseAuth auth;
   final FirebaseFirestore firestore;
+  final FirebaseStorage storage;
 
-  UserRepository({required this.auth, required this.firestore});
+  UserRepository(
+      {required this.auth, required this.firestore, required this.storage});
 
   Future<void> createUser({
     required String email,
@@ -20,15 +24,11 @@ class UserRepository {
 
       await userCredential.user!.updateDisplayName(userName);
 
-      await firestore
-          .collection('users')
-          .doc(userCredential.user!.uid)
-          .collection("Account info")
-          .doc()
-          .set({
+      await firestore.collection('users').doc(userCredential.user!.uid).set({
         'uid': userCredential.user!.uid,
         'email': email,
         'userName': userName,
+        'profileImageUrl': '',
       });
     } catch (e) {
       throw Exception("Error creating user: $e");
@@ -116,5 +116,114 @@ class UserRepository {
 
   String? getCurrentUserEmail() {
     return auth.currentUser?.email;
+  }
+
+  Future<void> uploadProfileImage(File image) async {
+    try {
+      User? user = auth.currentUser;
+      if (user != null) {
+        Reference storageRef =
+            storage.ref().child('profile_images/${user.uid}.jpg');
+        UploadTask uploadTask = storageRef.putFile(image);
+        TaskSnapshot taskSnapshot = await uploadTask;
+
+        if (taskSnapshot.state == TaskState.success) {
+          String downloadUrl = await storageRef.getDownloadURL();
+          await firestore.collection('users').doc(user.uid).update({
+            'profileImageUrl': downloadUrl,
+          });
+        }
+      }
+    } catch (e) {
+      throw Exception("Failed to upload image: $e");
+    }
+  }
+
+  Future<String?> getProfileImageUrl() async {
+    try {
+      User? user = auth.currentUser;
+      if (user != null) {
+        DocumentSnapshot userDoc =
+            await firestore.collection('users').doc(user.uid).get();
+        return userDoc['profileImageUrl'] as String?;
+      }
+    } catch (e) {
+      throw Exception("Failed to get profile image URL: $e");
+    }
+    return null;
+  }
+
+  Future<String?> getUserName() async {
+    User? user = auth.currentUser;
+    if (user != null) {
+      DocumentSnapshot doc =
+          await firestore.collection('users').doc(user.uid).get();
+          print("User Name ${doc['userName'] as String?}");
+      return doc['userName'] as String?;
+    }
+    return null;
+  }
+
+  Future<void> updateUserName(String newName) async {
+    try {
+      User? user = auth.currentUser;
+      if (user != null) {
+        await user.updateDisplayName(newName);
+        await firestore.collection('users').doc(user.uid).update({
+          'userName': newName,
+        });
+      }
+    } catch (e) {
+      throw Exception("Failed to update username: $e");
+    }
+  }
+
+  Future<void> reauthenticateUser({required String password}) async {
+    try {
+      User? user = auth.currentUser;
+      if (user != null) {
+        String email = user.email!;
+        AuthCredential credential =
+            EmailAuthProvider.credential(email: email, password: password);
+        await user.reauthenticateWithCredential(credential);
+        print('User re-authenticated successfully.');
+      }
+    } catch (e) {
+      throw Exception('Failed to re-authenticate user: $e');
+    }
+  }
+
+  Future<void> deleteAccount() async {
+    try {
+      User? user = auth.currentUser;
+      if (user != null) {
+        String uid = user.uid;
+
+        Reference storageRef = storage.ref().child('profile_images/$uid.jpg');
+
+        try {
+          await storageRef.getDownloadURL();
+
+          await storageRef.delete();
+        } catch (e) {
+          if (e.toString().contains('object-not-found')) {
+            print('No profile image found to delete.');
+          } else {
+            throw Exception('Failed to delete profile image: $e');
+          }
+        }
+
+        await firestore.collection('users').doc(uid).delete();
+
+        await user.delete();
+
+        print('User account deleted successfully.');
+      } else {
+        throw Exception('No user is currently signed in.');
+      }
+    } catch (e) {
+      print('Error deleting account: $e');
+      throw Exception('Failed to delete account: $e');
+    }
   }
 }
