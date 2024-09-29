@@ -15,7 +15,7 @@ class CardController extends ChangeNotifier {
     required String bankName,
     required String cardNumber,
     required String validDates,
-    required String status,
+    // required String status,
     required BuildContext context,
   }) async {
      List<Map<String, dynamic>> userCards = await fetchUserCards();
@@ -30,7 +30,7 @@ class CardController extends ChangeNotifier {
     holderName: holderName,
     bankName: bankName,
     cardNumber: cardNumber,
-    status: status,
+    // status: status,
     validDates: validDates,
   );
 

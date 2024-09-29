@@ -249,7 +249,6 @@ class _AddTransactionState extends State<AddTransaction> {
             type: widget.type,
             value: transaction_value,
           );
-// to send notification
           try {
             final notificationController =
                 Provider.of<NotificationController>(context, listen: false);
@@ -264,13 +263,11 @@ class _AddTransactionState extends State<AddTransaction> {
                   "You have withdrawn an amount of $transaction_value dollars from card number $selectedCardNumber.";
             }
 
-            // إضافة الإشعار إلى قاعدة البيانات
             await notificationController.addNotificationTodb(
               widget.type,
               notificationMessage,
             );
 
-            // بعد حفظ الإشعار، عرض رسالة نجاح
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text("Transaction and notification added successfully!"),

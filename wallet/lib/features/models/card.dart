@@ -2,7 +2,6 @@ class CardModel {
   String holderName;
   String bankName;
   String cardNumber;
-  String? status;
   String validDates;
 
   CardModel({
@@ -10,6 +9,5 @@ class CardModel {
     required this.bankName,
     required this.cardNumber,
     required this.validDates,
-    this.status,
   });
 }

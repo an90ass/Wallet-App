@@ -34,7 +34,7 @@ class Wallet extends StatelessWidget {
       "svgPath": ImageEnum.topup.svgPath,
     },
   ];
-    final List<Map<String, dynamic>> listViewItems = [
+  final List<Map<String, dynamic>> listViewItems = [
     {
       "title": "NetFlex",
       "icon": ImageEnum.netflex.imagePath,
@@ -49,15 +49,15 @@ class Wallet extends StatelessWidget {
     },
     {
       "title": "MasterCard",
-      "icon": ImageEnum.mastercard.imagePath, 
+      "icon": ImageEnum.mastercard.imagePath,
     },
     {
       "title": "Apple Pay",
-      "icon": ImageEnum.applepay.imagePath, 
+      "icon": ImageEnum.applepay.imagePath,
     },
     {
       "title": "Google Pay",
-      "icon": ImageEnum.googlepay.imagePath, 
+      "icon": ImageEnum.googlepay.imagePath,
     },
     {
       "title": "Stripe",
@@ -65,53 +65,54 @@ class Wallet extends StatelessWidget {
     },
     {
       "title": "Amazon Pay",
-      "icon": ImageEnum.amazonpay.imagePath, 
+      "icon": ImageEnum.amazonpay.imagePath,
     },
   ];
 
   @override
   Widget build(BuildContext context) {
-    final selectedCardName = Provider.of<CardStateNotifier>(context).cardName; 
-    final selectedCardNumber = Provider.of<CardStateNotifier>(context).cardNumber; 
-          WidgetsBinding.instance.addPostFrameCallback((_) {
+    final selectedCardName = Provider.of<CardStateNotifier>(context).cardName;
+    final selectedCardNumber =
+        Provider.of<CardStateNotifier>(context).cardNumber;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<PaymentController>(context, listen: false)
           .fetchUserPayments(selectedCardNumber);
     });
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading:false,
-         actions: [
-    Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Row(
-        children: [
-          ElevatedButton.icon(
-            onPressed: () {
-              Navigator.pushNamed(context, RouteNames.addCard);
-            },
-            icon: Icon(
-              Icons.add_card_outlined,
-              color: Colors.white,
-            ),
-            label: Text(
-              "Add new card",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-              ),
-            ),
-            style: ElevatedButton.styleFrom(
-              primary: AppColors.containerColor,
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8), 
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),   
-              ),
+        automaticallyImplyLeading: false,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pushNamed(context, RouteNames.addCard);
+                  },
+                  icon: Icon(
+                    Icons.add_card_outlined,
+                    color: Colors.white,
+                  ),
+                  label: Text(
+                    "Add new card",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    primary: AppColors.containerColor,
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
-      ),
-    ),
-  ],
       ),
       body: SafeArea(
         bottom: false,
@@ -125,20 +126,22 @@ class Wallet extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     buildTitleAndSubtitle(context),
-                    //  buildAvatar(context),
+                    // buildAvatar(context),
                     buildPictuerAvatar(context)
                   ],
                 ),
               ),
               GestureDetector(
-                onTap: () => Navigator.pushNamed(context, RouteNames.cardDetail),
+                onTap: () =>
+                    Navigator.pushNamed(context, RouteNames.cardDetail),
                 child: Card(
                   elevation: 5,
                   color: AppColors.containerColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),
                   ),
-                  child: buildCardInfo(context, selectedCardName,selectedCardNumber),
+                  child: buildCardInfo(
+                      context, selectedCardName, selectedCardNumber),
                 ),
               ),
               Padding(
@@ -177,101 +180,100 @@ class Wallet extends StatelessWidget {
                   // ),
                 ],
               ),
+              Expanded(
+                child: Consumer<PaymentController>(
+                  builder: (context, paymentController, child) {
+                    if (paymentController.isLoading) {
+                      return Center(child: CircularProgressIndicator());
+                    }
 
-               Expanded(
-      child: Consumer<PaymentController>(
-        builder: (context, paymentController, child) {
-          if (paymentController.isLoading) {
-            return Center(child: CircularProgressIndicator());
-          }
+                    if (paymentController.errorMessage != null) {
+                      return Center(
+                          child: Text(paymentController.errorMessage!));
+                    }
 
-          if (paymentController.errorMessage != null) {
-            return Center(child: Text(paymentController.errorMessage!));
-          }
+                    if (paymentController.payments.isEmpty) {
+                      return buildNoPaymentsFoundMessaj(context);
+                    }
 
-          if (paymentController.payments.isEmpty) {
-                        return buildNoPaymentsFoundMessaj(context);
+                    return ListView.builder(
+                      itemCount: paymentController.payments.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final payment = paymentController.payments[index];
+                        final paymentTitle = payment['paymentMethod'];
 
-          }
+                        final paymentIcon = listViewItems.firstWhere(
+                          (element) => element['title'] == paymentTitle,
+                          orElse: () =>
+                              {"icon": ImageEnum.profilePicture.imagePath},
+                        )['icon'];
 
-          return ListView.builder(
-            itemCount: paymentController.payments.length,
-            itemBuilder: (BuildContext context, int index) {
-              final payment = paymentController.payments[index];
-              final paymentTitle = payment['paymentMethod'];
-
-              final paymentIcon = listViewItems.firstWhere(
-                (element) => element['title'] == paymentTitle,
-                orElse: () => {"icon": ImageEnum.profilePicture.imagePath},
-              )['icon'];
-
-              return ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(
-                  payment['paymentTitle'] ?? "Payment",
-                  style: context.textTheme.labelMedium?.copyWith(
-                    color: AppColors.blackColor,
-                    fontSize: context.dynamicHeight(0.023),
-                    fontWeight: FontWeight.w400,
-                  ),
+                        return ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(
+                            payment['paymentTitle'] ?? "Payment",
+                            style: context.textTheme.labelMedium?.copyWith(
+                              color: AppColors.blackColor,
+                              fontSize: context.dynamicHeight(0.023),
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          subtitle: Text(
+                            payment['paymentDescription'] ??
+                                "Payment Description",
+                            style: context.textTheme.bodyMedium?.copyWith(
+                              color: AppColors.subtitleColor,
+                              fontSize: context.dynamicHeight(0.02),
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          trailing: Column(children: [
+                            Text(
+                              "\$${payment['amount'] ?? "0"}",
+                              style: context.textTheme.labelMedium?.copyWith(
+                                color: AppColors.darkBlueColor,
+                                fontSize: context.dynamicHeight(0.02),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 3.0),
+                              child: Text(
+                                _formatTimestamp(payment['timestamp']),
+                                style: context.textTheme.bodySmall?.copyWith(
+                                  color: Colors.grey[700],
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w400,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            ),
+                          ]),
+                          leading: buildPictuerAvatar(context),
+                          // CircleAvatar(
+                          //   radius: context.dynamicWidth(0.08),
+                          //   backgroundImage: AssetImage(paymentIcon),
+                          // ),
+                          // leading: ClipRRect(
+                          //   borderRadius:
+                          //       BorderRadius.circular(context.dynamicWidth(0.08)),
+                          //   child: Image.asset(
+                          //     paymentIcon,
+                          //     fit: BoxFit.cover,
+                          //     width: context.dynamicWidth(0.16),
+                          //     height: context.dynamicWidth(0.16),
+                          //   ),
+                          // ),
+                        );
+                      },
+                    );
+                  },
                 ),
-                subtitle: Text(
-                  payment['paymentDescription'] ?? "Payment Description",
-                  style: context.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.subtitleColor,
-                    fontSize: context.dynamicHeight(0.02),
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                trailing: Column(children: [
-                  Text(
-                    "\$${payment['amount'] ?? "0"}",
-                    style: context.textTheme.labelMedium?.copyWith(
-                      color: AppColors.darkBlueColor,
-                      fontSize: context.dynamicHeight(0.02),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 3.0),
-                    child: Text(
-                      _formatTimestamp(payment['timestamp']),
-                      style: context.textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[700],
-                        fontSize: 13,
-                        fontWeight: FontWeight.w400,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                  ),
-                  
-                ]),
-                leading: 
-                CircleAvatar(
-                  radius: context.dynamicWidth(0.08),
-                  backgroundImage: AssetImage(paymentIcon),
-                ),
-                // leading: ClipRRect(
-                //   borderRadius:
-                //       BorderRadius.circular(context.dynamicWidth(0.08)),
-                //   child: Image.asset(
-                //     paymentIcon,
-                //     fit: BoxFit.cover,
-                //     width: context.dynamicWidth(0.16),
-                //     height: context.dynamicWidth(0.16),
-                //   ),
-                // ),
-              );
-            },
-          );
-        },
-      ),
-    )
+              )
             ],
           ),
         ),
       ),
-     
     );
   }
 
@@ -287,10 +289,10 @@ class Wallet extends StatelessWidget {
           "type": "income",
         });
         break;
-        case "Transfer":
+      case "Transfer":
         Navigator.pushNamed(context, RouteNames.transfer);
         break;
-        case "Payment":
+      case "Payment":
         Navigator.pushNamed(context, RouteNames.payments);
         break;
       default:
@@ -326,69 +328,71 @@ class Wallet extends StatelessWidget {
   //   );
   // }
 
- Padding buildCardInfo(BuildContext context, String selectedCardName, String selectedCardNumber) {
-  return Padding(
-    padding: EdgeInsets.symmetric(
-      horizontal: context.dynamicWidth(0.1),
-      vertical: context.dynamicWidth(0.05),
-    ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Balance",
-              style: context.textTheme.headlineMedium?.copyWith(
-                  color: AppColors.whiteColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: context.dynamicHeight(0.020)),
-            ),
-            SizedBox(height: context.dynamicHeight(0.02)),
-            Consumer<TransactionController>(
-              builder: (context, transactionController, child) {
-                if (selectedCardNumber != transactionController.currentCardNumber) {
-                  
-                    transactionController.getBalance(selectedCardNumber);
-                  
-                }
-                return Text(
-                  '\$ ${transactionController.balance.toStringAsFixed(2)}',
-                  style: context.textTheme.bodyMedium?.copyWith(
+  Padding buildCardInfo(BuildContext context, String selectedCardName,
+      String selectedCardNumber) {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: context.dynamicWidth(0.1),
+        vertical: context.dynamicWidth(0.05),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Balance",
+                style: context.textTheme.headlineMedium?.copyWith(
                     color: AppColors.whiteColor,
-                    fontSize: context.dynamicHeight(0.02),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Card Name",
-              style: context.textTheme.headlineMedium?.copyWith(
-                  color: AppColors.whiteColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: context.dynamicHeight(0.020)),
-            ),
-            SizedBox(height: context.dynamicHeight(0.02)),
-            Text(
-              selectedCardName.isNotEmpty ? selectedCardName : 'No Cards Available',
-              style: context.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.whiteColor,
-                  fontSize: context.dynamicHeight(0.020)),
-            ),
-          ],
-        ),
-      ],
-    ),
-  );
-}
+                    fontWeight: FontWeight.bold,
+                    fontSize: context.dynamicHeight(0.020)),
+              ),
+              SizedBox(height: context.dynamicHeight(0.02)),
+              Consumer<TransactionController>(
+                builder: (context, transactionController, child) {
+                  if (selectedCardNumber !=
+                      transactionController.currentCardNumber) {
+                    transactionController.getBalance(selectedCardNumber);
+                  }
+                  return Text(
+                    '\$ ${transactionController.balance.toStringAsFixed(2)}',
+                    style: context.textTheme.bodyMedium?.copyWith(
+                      color: AppColors.whiteColor,
+                      fontSize: context.dynamicHeight(0.02),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Card Name",
+                style: context.textTheme.headlineMedium?.copyWith(
+                    color: AppColors.whiteColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: context.dynamicHeight(0.020)),
+              ),
+              SizedBox(height: context.dynamicHeight(0.02)),
+              Text(
+                selectedCardName.isNotEmpty
+                    ? selectedCardName
+                    : 'No Cards Available',
+                style: context.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.whiteColor,
+                    fontSize: context.dynamicHeight(0.020)),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
- Widget buildNoPaymentsFoundMessaj(BuildContext context) {
+  Widget buildNoPaymentsFoundMessaj(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(bottom: context.dynamicHeight(0.1)),
       child: Column(
@@ -420,59 +424,59 @@ class Wallet extends StatelessWidget {
       ),
     );
   }
-  
- buildPictuerAvatar(BuildContext context) {
-  final userController = Provider.of<UserController>(context, listen: false);
 
-  return FutureBuilder<String?>(
-    future: userController.getProfileImageUrl(), 
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return CircularProgressIndicator(); 
-      } else if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
-        return CircleAvatar(
-          radius: 50,
-          backgroundImage: AssetImage('assets/images/profile.png'), 
-        );
-      } else {
-        return CircleAvatar(
-          radius: 50,
-          backgroundImage: NetworkImage(snapshot.data!), 
-        );
-      }
-    },
-  );
-}
-}
- String _formatTimestamp(dynamic timestamp) {
-    if (timestamp == null) {
-      return "No Date";
-    }
+  buildPictuerAvatar(BuildContext context) {
+    final userController = Provider.of<UserController>(context, listen: false);
 
-    DateTime date;
-    if (timestamp is Timestamp) {
-      date = timestamp.toDate();
-    } else if (timestamp is DateTime) {
-      date = timestamp;
-    } else {
-      return "Invalid Date";
-    }
-
-    String formattedDate = DateFormat('yyyy-MM-dd HH:mm').format(date);
-
-    return formattedDate;
+    return FutureBuilder<String?>(
+      future: userController.getProfileImageUrl(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError ||
+            !snapshot.hasData ||
+            snapshot.data!.isEmpty) {
+          return CircleAvatar(
+            radius: 50,
+            backgroundImage: AssetImage('assets/images/profile.png'),
+          );
+        } else {
+          return CircleAvatar(
+            radius: 50,
+            backgroundImage: NetworkImage(snapshot.data!),
+          );
+        }
+      },
+    );
   }
+}
+
+String _formatTimestamp(dynamic timestamp) {
+  if (timestamp == null) {
+    return "No Date";
+  }
+
+  DateTime date;
+  if (timestamp is Timestamp) {
+    date = timestamp.toDate();
+  } else if (timestamp is DateTime) {
+    date = timestamp;
+  } else {
+    return "Invalid Date";
+  }
+
+  String formattedDate = DateFormat('yyyy-MM-dd HH:mm').format(date);
+
+  return formattedDate;
+}
+
 class QuickMenuItem extends StatelessWidget {
   final String title;
   final String svgPath;
   final Function()? onTap;
 
-  const QuickMenuItem({
-    Key? key,
-    required this.title,
-    required this.svgPath,
-   
- this.onTap});
+  const QuickMenuItem(
+      {Key? key, required this.title, required this.svgPath, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -501,8 +505,5 @@ class QuickMenuItem extends StatelessWidget {
         ],
       ),
     );
-    
   }
-  
 }
-

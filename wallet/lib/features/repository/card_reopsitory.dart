@@ -11,7 +11,7 @@ class CardRepository {
     required String holderName,
     required String bankName,
     required String cardNumber,
-    required String status,
+    // required String status,
     required String validDates,
   }) async {
     
@@ -27,7 +27,7 @@ class CardRepository {
           "holderName": holderName,
           "bankName": bankName,
           "cardNumber": cardNumber,
-          "status": status,
+          // "status": status,
           "validDates": validDates,
           "cardName": "$holderName - $bankName",
         });

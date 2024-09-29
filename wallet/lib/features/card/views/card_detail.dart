@@ -41,7 +41,7 @@ class _CardDetailState extends State<CardDetail> {
               "CardName": selectedCard['cardName'].toString(),
               "BankName": selectedCard['bankName'].toString(),
               "cardNumber": selectedCard['cardNumber'].toString(),
-              "Status": selectedCard['status'].toString(),
+              // "Status": selectedCard['status'].toString(),
               "Valid": selectedCard['validDates'].toString(),
             };
           });
@@ -148,7 +148,7 @@ class _CardDetailState extends State<CardDetail> {
               "CardName": selectedCard['cardName'].toString(),
               "BankName": selectedCard['bankName'].toString(),
               "cardNumber": selectedCard['cardNumber'].toString(),
-              "Status": selectedCard['status'].toString(),
+              // "Status": selectedCard['status'].toString(),
               "Valid": selectedCard['validDates'].toString(),
             };
 

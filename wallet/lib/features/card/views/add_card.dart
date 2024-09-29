@@ -6,6 +6,8 @@ import 'package:wallet/config/utility/enums/image_enum.dart';
 import 'package:wallet/features/controller/card_controller.dart';
 import 'package:wallet/features/models/card.dart';
 
+import '../../controller/notification_controller.dart';
+
 class AddCard extends StatefulWidget {
   @override
   _AddCardState createState() => _AddCardState();
@@ -111,7 +113,7 @@ class _AddCardState extends State<AddCard> {
           SizedBox(height: context.dynamicHeight(0.02)),
           buildValidDatesField(),
           SizedBox(height: context.dynamicHeight(0.02)),
-          buildStatusField(),
+          // buildStatusField(),
         ],
       ),
     );
@@ -163,14 +165,14 @@ class _AddCardState extends State<AddCard> {
     return TextFormField(
       decoration: InputDecoration(
         labelText: "Card Number",
-        hintText: "Enter account number",
+        hintText: "Enter card number",
         border: OutlineInputBorder(),
         filled: true,
         fillColor: AppColors.lightPurpleColor,
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return "Please enter the account number";
+          return "Please enter the card number";
         }
         return null;
       },
@@ -217,36 +219,36 @@ class _AddCardState extends State<AddCard> {
     );
   }
 
-  Widget buildStatusField() {
-    final List<String> status = ["Active", "Inactive"];
+  // Widget buildStatusField() {
+  //   final List<String> status = ["Active", "Inactive"];
 
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        labelText: "Status",
-        border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
-        ),
-        filled: true,
-        fillColor: AppColors.lightPurpleColor,
-      ),
-      value: selectedStatus,
-      hint: Text("Select status"),
-      onChanged: (String? newValue) {
-        setState(() {
-          selectedStatus = newValue;
-        });
-      },
-      items: status.map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
-      onSaved: (String? value) {
-        card.status = value!;
-      },
-    );
-  }
+  //   return DropdownButtonFormField<String>(
+  //     decoration: InputDecoration(
+  //       labelText: "Status",
+  //       border: const OutlineInputBorder(
+  //         borderRadius: BorderRadius.all(Radius.circular(12)),
+  //       ),
+  //       filled: true,
+  //       fillColor: AppColors.lightPurpleColor,
+  //     ),
+  //     value: selectedStatus,
+  //     hint: Text("Select status"),
+  //     onChanged: (String? newValue) {
+  //       setState(() {
+  //         selectedStatus = newValue;
+  //       });
+  //     },
+  //     items: status.map<DropdownMenuItem<String>>((String value) {
+  //       return DropdownMenuItem<String>(
+  //         value: value,
+  //         child: Text(value),
+  //       );
+  //     }).toList(),
+  //     onSaved: (String? value) {
+  //       card.status = value!;
+  //     },
+  //   );
+  // }
 
   Widget buildSubmitButton(BuildContext context) {
     return Padding(
@@ -263,7 +265,7 @@ class _AddCardState extends State<AddCard> {
             bankName: card.bankName,
             cardNumber: card.cardNumber,
             validDates: card.validDates,
-            status: card.status ?? 'Active',
+            // status: card.status ?? 'Active',
             context: context,
           );
 
@@ -298,6 +300,19 @@ class _AddCardState extends State<AddCard> {
               ),
             );
           }
+                  try{
+             final notificationController =
+                Provider.of<NotificationController>(context, listen: false);
+           await notificationController.addNotificationTodb(
+  "Added New Card",
+"You have added new card with the number ${card.cardNumber}"
+
+);
+
+          }catch(e){
+print(e);
+          }
+        
         }
       },
         style: ElevatedButton.styleFrom(

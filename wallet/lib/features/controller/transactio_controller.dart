@@ -34,7 +34,7 @@ class TransactionController extends ChangeNotifier {
     if (cardNumber.isEmpty) {
       print('Card number is empty');
       _balance = 0.0;
-      notifyListeners();
+      // notifyListeners();
       return;
     }
 
