@@ -1,8 +1,8 @@
 class CardModel {
-  String holderName;
-  String bankName;
-  String cardNumber;
-  String validDates;
+  String? holderName;
+  String? bankName;
+  String? cardNumber;
+  String? validDates;
 
   CardModel({
     required this.holderName,

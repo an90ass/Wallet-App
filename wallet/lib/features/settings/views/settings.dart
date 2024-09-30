@@ -129,7 +129,7 @@ class _SettingsState extends State<Settings> {
 
   Widget buildLogOutButton() {
     return Padding(
-      padding: const EdgeInsets.only(top: 20),
+      padding: const EdgeInsets.only(top: 2),
       child: Column(
         children: [
           ElevatedButton(

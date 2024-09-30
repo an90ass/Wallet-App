@@ -111,7 +111,7 @@ class _CardDetailState extends State<CardDetail> {
       } else if (snapshot.hasError) {
         return Text('Error: ${snapshot.error}');
       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-        return const Text('No cards found');
+        return buildNoPaymentsFoundMessaj(context,'No cards found','It seems like there are no cards available yet');
       }
 
       List<Map<String, dynamic>> userCards = snapshot.data!;
@@ -188,49 +188,53 @@ class _CardDetailState extends State<CardDetail> {
   
 
  Widget buildCardDeleteButton() {
-  return TextButton(
-   onPressed: () async {
+  // تحقق مما إذا كانت selectedCardInfo تحتوي على بيانات لعرض الزر
   if (selectedCardInfo != null) {
-    String cardNumber = selectedCardInfo!['cardNumber'];
+    return TextButton(
+      onPressed: () async {
+        if (selectedCardInfo != null) {
+          String cardNumber = selectedCardInfo!['cardNumber'];
 
-    try {
-      await Provider.of<CardController>(context, listen: false).deleteCard(context, cardNumber);
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Card deleted successfully'),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 2),
-        ),
-      );
-    Navigator.pop(context);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error deleting card: $e'),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 2),
-        ),
-      );
-    }
-  }
-},
+          try {
+            await Provider.of<CardController>(context, listen: false)
+                .deleteCard(context, cardNumber);
 
-    
-    child: Text(
-      "Delete Card",
-      style: context.textTheme.labelMedium?.copyWith(
-        color: AppColors.containerColor,
-        fontWeight: FontWeight.w500,
-        fontSize: context.dynamicHeight(0.023),
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Card deleted successfully'),
+                backgroundColor: Colors.green,
+                duration: Duration(seconds: 2),
+              ),
+            );
+            Navigator.pop(context);
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Error deleting card: $e'),
+                backgroundColor: Colors.red,
+                duration: Duration(seconds: 2),
+              ),
+            );
+          }
+        }
+      },
+      child: Text(
+        "Delete Card",
+        style: context.textTheme.labelMedium?.copyWith(
+          color: AppColors.containerColor,
+          fontWeight: FontWeight.w500,
+          fontSize: context.dynamicHeight(0.023),
+        ),
+        textAlign: TextAlign.center,
       ),
-      textAlign: TextAlign.center,
-    ),
-  );
+    );
+  } else {
+    return Container();  
+  }
 }
 
-
   Widget buildTitle() {
+    if (selectedCardInfo != null) {
     return Text(
       "Card Detail",
       style: context.textTheme.headlineMedium?.copyWith(
@@ -239,12 +243,48 @@ class _CardDetailState extends State<CardDetail> {
         fontSize: context.dynamicHeight(0.035),
       ),
     );
+    }else{
+      return Container();
+    }
   }
 
   Widget buildCardImage() {
     return Image.asset(ImageEnum.horizontalCard.imagePath);
   }
-}
+  
+ Widget buildNoPaymentsFoundMessaj(BuildContext context,String title,String subtitle) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: context.dynamicHeight(0.1)),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.warning_amber_rounded,
+            color: AppColors.lightPurpleColor,
+            size: 80,
+          ),
+          SizedBox(height: context.dynamicHeight(0.02)),
+          Text(
+            title,
+            style: context.textTheme.titleLarge?.copyWith(
+              color: AppColors.titleColor,
+              fontWeight: FontWeight.bold,
+              fontSize: context.dynamicHeight(0.03),
+            ),
+          ),
+          // SizedBox(height: context.dynamicHeight(0.01)),
+          Text(
+           subtitle ,
+            style: context.textTheme.bodyMedium?.copyWith(
+              color: AppColors.subtitleColor,
+              fontSize: context.dynamicHeight(0.02),
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }}
 
 class CardInfoItem extends StatelessWidget {
   const CardInfoItem({super.key, required this.title, required this.info});
@@ -278,5 +318,7 @@ class CardInfoItem extends StatelessWidget {
         ],
       ),
     );
+    
   }
+  
 }

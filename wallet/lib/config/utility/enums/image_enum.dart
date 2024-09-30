@@ -14,7 +14,7 @@ enum ImageEnum {
   wallet("wallet"),
   signIn("sign_in"),
   signUp("sign_up_new"),
-  amazonpay("amazonPay2"),
+  amazonpay("amazonPay"),
   applepay("apple_pay"),
   googlepay("googlepay"),
   mastercard("mastercard"),

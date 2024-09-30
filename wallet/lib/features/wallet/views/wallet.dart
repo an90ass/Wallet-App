@@ -249,11 +249,11 @@ class Wallet extends StatelessWidget {
                               ),
                             ),
                           ]),
-                          leading: buildPictuerAvatar(context),
-                          // CircleAvatar(
-                          //   radius: context.dynamicWidth(0.08),
-                          //   backgroundImage: AssetImage(paymentIcon),
-                          // ),
+                          leading: 
+                          CircleAvatar(
+                            radius: context.dynamicWidth(0.08),
+                            backgroundImage: AssetImage(paymentIcon),
+                          ),
                           // leading: ClipRRect(
                           //   borderRadius:
                           //       BorderRadius.circular(context.dynamicWidth(0.08)),
@@ -401,19 +401,18 @@ class Wallet extends StatelessWidget {
           Icon(
             Icons.warning_amber_rounded,
             color: AppColors.lightPurpleColor,
-            size: 80,
+            size: 60,
           ),
           Text(
             'No payments found',
             style: context.textTheme.titleLarge?.copyWith(
               color: AppColors.titleColor,
               fontWeight: FontWeight.bold,
-              fontSize: context.dynamicHeight(0.03),
+              fontSize: context.dynamicHeight(0.02),
             ),
           ),
-          SizedBox(height: context.dynamicHeight(0.01)),
           Text(
-            'It seems like there are no payments available yet.',
+            'It seems like there are no payments available yet',
             style: context.textTheme.bodyMedium?.copyWith(
               color: AppColors.subtitleColor,
               fontSize: context.dynamicHeight(0.02),

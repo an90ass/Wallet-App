@@ -261,10 +261,10 @@ class _AddCardState extends State<AddCard> {
                       final cardController = Provider.of<CardController>(context, listen: false);
 
           bool cardAdded = await cardController.addCard(
-            holderName: card.holderName,
-            bankName: card.bankName,
-            cardNumber: card.cardNumber,
-            validDates: card.validDates,
+            holderName: card.holderName!,
+            bankName: card.bankName!,
+            cardNumber: card.cardNumber!,
+            validDates: card.validDates!,
             // status: card.status ?? 'Active',
             context: context,
           );
@@ -293,6 +293,15 @@ class _AddCardState extends State<AddCard> {
               },
             );
           } else {
+          
+            _formKey.currentState!.reset();
+             setState(() {
+              card.holderName = null;
+              card.bankName = null;
+              card.cardNumber = null;
+              card.validDates = null;
+              selectedDate = null;  
+            });
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text("Card added successfully"),

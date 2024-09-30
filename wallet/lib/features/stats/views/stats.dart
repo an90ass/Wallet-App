@@ -110,7 +110,7 @@ class StatsState extends State<Stats> {
             : _errorMessage != null
                 ? Center(child: Text(_errorMessage!))
                 : _userCards == null || _userCards!.isEmpty
-                    ? const Center(child: Text('No cards found'))
+                    ?   Center(child: buildNoPaymentsFoundMessaj('No card found','It seems like there are no cards available yet'))
                     : Padding(
                         padding: context.paddingAllDefault,
                         child: Column(
@@ -261,7 +261,7 @@ class StatsState extends State<Stats> {
           }
 
           if (paymentController.payments.isEmpty) {
-            return buildNoPaymentsFoundMessaj();
+            return buildNoPaymentsFoundMessaj('No payments found','It seems like there are no payments available yet');
           }
 
           return ListView.builder(
@@ -328,7 +328,7 @@ class StatsState extends State<Stats> {
     );
   }
 
-  Widget buildNoPaymentsFoundMessaj() {
+  Widget buildNoPaymentsFoundMessaj(String title,String subtitle) {
     return Padding(
       padding: EdgeInsets.only(bottom: context.dynamicHeight(0.1)),
       child: Column(
@@ -341,7 +341,7 @@ class StatsState extends State<Stats> {
           ),
           SizedBox(height: context.dynamicHeight(0.02)),
           Text(
-            'No payments found',
+            title,
             style: context.textTheme.titleLarge?.copyWith(
               color: AppColors.titleColor,
               fontWeight: FontWeight.bold,
@@ -350,7 +350,7 @@ class StatsState extends State<Stats> {
           ),
           // SizedBox(height: context.dynamicHeight(0.01)),
           Text(
-            'It seems like there are no payments available yet.',
+           subtitle ,
             style: context.textTheme.bodyMedium?.copyWith(
               color: AppColors.subtitleColor,
               fontSize: context.dynamicHeight(0.02),
