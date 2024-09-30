@@ -178,21 +178,23 @@ class _ProfileSettingsState extends State<ProfileSettings> {
       ),
       body: SafeArea(
         child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                buildPictureAvatar(),
-                SizedBox(height: 10),
-                _isUploading
-                    ? CircularProgressIndicator()     
-                    : buildCangePictureButton(),
-                SizedBox(height: 20),
-                buildChangeUserNameField(),
-                SizedBox(height: 80),
-                buildDeleteAccountButton(),
-              ],
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  buildPictureAvatar(),
+                  SizedBox(height: 10),
+                  _isUploading
+                      ? CircularProgressIndicator()     
+                      : buildCangePictureButton(),
+                  SizedBox(height: 20),
+                  buildChangeUserNameField(),
+                  SizedBox(height: 80),
+                  buildDeleteAccountButton(),
+                ],
+              ),
             ),
           ),
         ),

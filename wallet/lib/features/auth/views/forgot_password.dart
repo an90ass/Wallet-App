@@ -33,26 +33,26 @@ class ForgotPassword extends StatelessWidget {
               SizedBox(height: 20),
              buildSentButton(context),
               SizedBox(height: 20),
-              Consumer<UserController>(
-                builder: (context, userController, child) {
-                  final message = userController.forgotPassword_message;
-                  return message != null
-                      ? Center(
-                          child: Container(
-                            padding: EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: AppColors.lightPurpleColor,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              message,
-                              style: TextStyle(color: AppColors.whiteColor, fontSize: 16),
-                            ),
-                          ),
-                        )
-                      : SizedBox.shrink();
-                },
-              ),
+          //     Consumer<UserController>(
+          //       builder: (context, userController, child) {
+          //         final message = userController.forgotPassword_message;
+          //         return message != null
+          //             ? Center(
+          //                 child: Container(
+          //                   padding: EdgeInsets.all(12),
+          //                   decoration: BoxDecoration(
+          //                     color: AppColors.lightPurpleColor,
+          //                     borderRadius: BorderRadius.circular(8),
+          //                   ),
+          //                   child: Text(
+          //                     message,
+          //                     style: TextStyle(color: AppColors.whiteColor, fontSize: 16),
+          //                   ),
+          //                 ),
+          //               )
+          //             : SizedBox.shrink();
+          //       },
+          //     ),
             ],
           ),
         ),

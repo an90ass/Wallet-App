@@ -17,30 +17,32 @@ class ServiceCenter extends StatelessWidget {
         ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              buildHeader(),
-              SizedBox(height: 20),
-              buildInfoCard(
-                icon: Icons.phone,
-                title: 'Phone',
-                subtitle: '+905397924923', 
-              ),
-              buildInfoCard(
-                icon: Icons.email,
-                title: 'Email',
-                subtitle: 'anass12976@gmail.com', 
-              ),
-              buildInfoCard(
-                icon: Icons.link,
-                title: 'LinkedIn',
-                subtitle: 'https://www.linkedin.com/in/anas-a-12815124b/',
-              ),
-              SizedBox(height: 30),
-            ],
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                buildHeader(),
+                SizedBox(height: 20),
+                buildInfoCard(
+                  icon: Icons.phone,
+                  title: 'Phone',
+                  subtitle: '+905397924923', 
+                ),
+                buildInfoCard(
+                  icon: Icons.email,
+                  title: 'Email',
+                  subtitle: 'anass12976@gmail.com', 
+                ),
+                buildInfoCard(
+                  icon: Icons.link,
+                  title: 'LinkedIn',
+                  subtitle: 'https://www.linkedin.com/in/anas-a-12815124b/',
+                ),
+                SizedBox(height: 30),
+              ],
+            ),
           ),
         ),
       ),

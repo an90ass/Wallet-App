@@ -37,36 +37,38 @@ class _SignInState extends State<SignIn> {
                 )),
             AspectRatio(
               aspectRatio: 1,
-              child: Container(
-                padding: EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                    color: AppColors.whiteColor,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20))),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Sign in ",
-                        style: context.textTheme.bodyMedium?.copyWith(
-                            color: AppColors.darkBlueColor, fontSize: 24),
+              child: SingleChildScrollView(
+                child: Container(
+                  padding: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                      color: AppColors.whiteColor,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20))),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Sign in ",
+                          style: context.textTheme.bodyMedium?.copyWith(
+                              color: AppColors.darkBlueColor, fontSize: 24),
+                        ),
                       ),
-                    ),
-                    Form(
-                        key: _formKey,
-                        child: Column(
-                          children: [
-                            buildEmailField(),
-                            buildPasswordField(),
-                            buildSignInButton(),
-                            buildForgetPasswordButton(),
-                            builSignUpButton(),
-                          ],
-                        ))
-                  ],
+                      Form(
+                          key: _formKey,
+                          child: Column(
+                            children: [
+                              buildEmailField(),
+                              buildPasswordField(),
+                              buildSignInButton(),
+                              buildForgetPasswordButton(),
+                              builSignUpButton(),
+                            ],
+                          ))
+                    ],
+                  ),
                 ),
               ),
             ),

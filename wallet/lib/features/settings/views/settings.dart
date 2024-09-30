@@ -21,15 +21,17 @@ class _SettingsState extends State<Settings> {
   }
 
   Widget buildSettingsPage(BuildContext context) {
-    return Column(
-      children: [
-       const SizedBox(height: 30),
-        buildTitle(),
-       const SizedBox(height: 30),
-        buildCards(context),
-      const  SizedBox(height: 60),
-        buildLogOutButton(),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+         const SizedBox(height: 30),
+          buildTitle(),
+         const SizedBox(height: 30),
+          buildCards(context),
+        const  SizedBox(height: 60),
+          buildLogOutButton(),
+        ],
+      ),
     );
   }
 

@@ -57,18 +57,20 @@ class _AddTransactionState extends State<AddTransaction> {
     return SafeArea(
       child: Padding(
         padding: context.paddingAllDefault,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _buildTransactionAmount(context),
-            const SizedBox(height: 20),
-            _buildCardDropdown(context),
-            const SizedBox(height: 30),
-            _buildKeyboard(context),
-            const SizedBox(height: 20),
-            _buildSubmitButton(context),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildTransactionAmount(context),
+              const SizedBox(height: 20),
+              _buildCardDropdown(context),
+              const SizedBox(height: 30),
+              _buildKeyboard(context),
+              const SizedBox(height: 20),
+              _buildSubmitButton(context),
+            ],
+          ),
         ),
       ),
     );

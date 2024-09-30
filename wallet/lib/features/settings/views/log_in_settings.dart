@@ -34,53 +34,55 @@ class _LoginInSettingsState extends State<LoginInSettings> {
       ),
     ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Update Email & Password',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.titleColor,
-                  ),
-                ),
-                SizedBox(height: 50),
-                buildCurrentEmailField(context),
-                SizedBox(height: 20),
-                buildNewEmailField(),
-                SizedBox(height: 20),
-                buildPasswordField(),
-                SizedBox(height: 20),
-                buildConfirmPasswordField(),
-                SizedBox(height: 30),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        await _updateUserInfo(context);
-                      }
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                      child: Text(
-                        'Save Changes',
-                        style: TextStyle(fontSize: 18,color: AppColors.whiteColor),
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      primary: AppColors.lightPurpleColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Update Email & Password',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.titleColor,
                     ),
                   ),
-                ),
-              ],
+                  SizedBox(height: 50),
+                  buildCurrentEmailField(context),
+                  SizedBox(height: 20),
+                  buildNewEmailField(),
+                  SizedBox(height: 20),
+                  buildPasswordField(),
+                  SizedBox(height: 20),
+                  buildConfirmPasswordField(),
+                  SizedBox(height: 30),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          await _updateUserInfo(context);
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                        child: Text(
+                          'Save Changes',
+                          style: TextStyle(fontSize: 18,color: AppColors.whiteColor),
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        primary: AppColors.lightPurpleColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

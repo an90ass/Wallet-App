@@ -10,7 +10,6 @@ import 'package:wallet/features/wallet/views/wallet.dart';
 import 'package:wallet/features/controller/notification_controller.dart';
 import 'package:wallet/features/settings/views/settings.dart';
 
-import '../../../../config/routes/route_name.dart';
 
 class Home extends StatefulWidget {
   @override

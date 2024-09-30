@@ -328,7 +328,7 @@ class StatsState extends State<Stats> {
     );
   }
 
-  Widget buildNoPaymentsFoundMessaj(String title,String subtitle) {
+ Widget buildNoPaymentsFoundMessaj(String title,String subtitle) {
     return Padding(
       padding: EdgeInsets.only(bottom: context.dynamicHeight(0.1)),
       child: Column(
@@ -339,13 +339,12 @@ class StatsState extends State<Stats> {
             color: AppColors.lightPurpleColor,
             size: 80,
           ),
-          SizedBox(height: context.dynamicHeight(0.02)),
           Text(
             title,
             style: context.textTheme.titleLarge?.copyWith(
               color: AppColors.titleColor,
               fontWeight: FontWeight.bold,
-              fontSize: context.dynamicHeight(0.03),
+              fontSize: context.dynamicHeight(0.02),
             ),
           ),
           // SizedBox(height: context.dynamicHeight(0.01)),
@@ -353,7 +352,7 @@ class StatsState extends State<Stats> {
            subtitle ,
             style: context.textTheme.bodyMedium?.copyWith(
               color: AppColors.subtitleColor,
-              fontSize: context.dynamicHeight(0.02),
+              fontSize: context.dynamicHeight(0.01),
             ),
             textAlign: TextAlign.center,
           ),
@@ -361,6 +360,7 @@ class StatsState extends State<Stats> {
       ),
     );
   }
+
 
   String _formatTimestamp(dynamic timestamp) {
     if (timestamp == null) {

@@ -64,20 +64,38 @@ class UserRepository {
     }
   }
 
+  // Future<String> forgotPassword({required String email}) async {
+  //   try {
+  //     final signInMethods = await auth.fetchSignInMethodsForEmail(email);
+
+  //     if (signInMethods.isEmpty) {
+  //       return "No user found with this email.";
+  //     }
+
+  //     await auth.sendPasswordResetEmail(email: email);
+  //     return "Password reset link sent! Check your email.";
+  //   } on FirebaseAuthException catch (e) {
+  //     return e.message.toString();
+  //   }
+  // }
+
   Future<String> forgotPassword({required String email}) async {
-    try {
-      final signInMethods = await auth.fetchSignInMethodsForEmail(email);
-
-      if (signInMethods.isEmpty) {
-        return "No user found with this email.";
-      }
-
-      await auth.sendPasswordResetEmail(email: email);
-      return "Password reset link sent! Check your email.";
-    } on FirebaseAuthException catch (e) {
+  try {
+    // Directly send the password reset email
+    await auth.sendPasswordResetEmail(email: email);
+    return "Password reset link sent! Check your email.";
+  } on FirebaseAuthException catch (e) {
+    // Handle errors in a generic way
+    if (e.code == 'user-not-found') {
+      return "No user found with this email.";
+    } else if (e.code == 'invalid-email') {
+      return "Invalid email address provided.";
+    } else {
+      // Return the error message for other FirebaseAuth exceptions
       return e.message.toString();
     }
   }
+}
 
   Future<String> updateEmail({required String newEmail}) async {
     try {
