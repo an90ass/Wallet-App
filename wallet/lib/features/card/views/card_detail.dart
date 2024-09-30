@@ -307,6 +307,39 @@ class _CardDetailState extends State<CardDetail> {
   }
 }
 
+// class CardInfoItem extends StatelessWidget {
+//   const CardInfoItem({super.key, required this.title, required this.info});
+//   final String title;
+//   final String info;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return SizedBox(
+//       width: context.dynamicWidth(0.65),
+//       child: Row(
+//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//         children: [
+//           Text(
+//             title,
+//             style: context.textTheme.labelSmall?.copyWith(
+//               color: AppColors.subtitleColor,
+//               fontSize: context.dynamicHeight(0.023),
+//             ),
+//           ),
+//           SizedBox(
+//             width: context.dynamicWidth(0.05),
+//           ),
+//           Text(
+//             info,
+//             style: context.textTheme.labelSmall?.copyWith(
+//               color: AppColors.containerColor,
+//               fontSize: context.dynamicHeight(0.020),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
 class CardInfoItem extends StatelessWidget {
   const CardInfoItem({super.key, required this.title, required this.info});
   final String title;
@@ -319,21 +352,30 @@ class CardInfoItem extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            title,
-            style: context.textTheme.labelSmall?.copyWith(
-              color: AppColors.subtitleColor,
-              fontSize: context.dynamicHeight(0.023),
+          Flexible(
+            flex: 2,
+            child: Text(
+              title,
+              style: context.textTheme.labelSmall?.copyWith(
+                color: AppColors.subtitleColor,
+                fontSize: context.dynamicHeight(0.023),
+              ),
             ),
           ),
           SizedBox(
             width: context.dynamicWidth(0.05),
           ),
-          Text(
-            info,
-            style: context.textTheme.labelSmall?.copyWith(
-              color: AppColors.containerColor,
-              fontSize: context.dynamicHeight(0.020),
+          Flexible(
+            flex: 3,
+            child: SingleChildScrollView( // Enable scrolling for the info text
+              scrollDirection: Axis.horizontal, // Horizontal scroll
+              child: Text(
+                info,
+                style: context.textTheme.labelSmall?.copyWith(
+                  color: AppColors.containerColor,
+                  fontSize: context.dynamicHeight(0.020),
+                ),
+              ),
             ),
           ),
         ],

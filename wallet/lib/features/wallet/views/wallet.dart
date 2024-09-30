@@ -328,7 +328,70 @@ class Wallet extends StatelessWidget {
   //   );
   // }
 
-  Padding buildCardInfo(BuildContext context, String selectedCardName,
+  // Padding buildCardInfo(BuildContext context, String selectedCardName,
+  //     String selectedCardNumber) {
+  //   return Padding(
+  //     padding: EdgeInsets.symmetric(
+  //       horizontal: context.dynamicWidth(0.1),
+  //       vertical: context.dynamicWidth(0.05),
+  //     ),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //       children: [
+  //         Column(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             Text(
+  //               "Balance",
+  //               style: context.textTheme.headlineMedium?.copyWith(
+  //                   color: AppColors.whiteColor,
+  //                   fontWeight: FontWeight.bold,
+  //                   fontSize: context.dynamicHeight(0.020)),
+  //             ),
+  //             SizedBox(height: context.dynamicHeight(0.02)),
+  //             Consumer<TransactionController>(
+  //               builder: (context, transactionController, child) {
+  //                 if (selectedCardNumber !=
+  //                     transactionController.currentCardNumber) {
+  //                   transactionController.getBalance(selectedCardNumber);
+  //                 }
+  //                 return Text(
+  //                   '\$ ${transactionController.balance.toStringAsFixed(2)}',
+  //                   style: context.textTheme.bodyMedium?.copyWith(
+  //                     color: AppColors.whiteColor,
+  //                     fontSize: context.dynamicHeight(0.02),
+  //                   ),
+  //                 );
+  //               },
+  //             ),
+  //           ],
+  //         ),
+  //         Column(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             Text(
+  //               "Card Name",
+  //               style: context.textTheme.headlineMedium?.copyWith(
+  //                   color: AppColors.whiteColor,
+  //                   fontWeight: FontWeight.bold,
+  //                   fontSize: context.dynamicHeight(0.020)),
+  //             ),
+  //             SizedBox(height: context.dynamicHeight(0.02)),
+  //             Text(
+  //               selectedCardName.isNotEmpty
+  //                   ? selectedCardName
+  //                   : 'No Cards Available',
+  //               style: context.textTheme.bodyMedium?.copyWith(
+  //                   color: AppColors.whiteColor,
+  //                   fontSize: context.dynamicHeight(0.020)),
+  //             ),
+  //           ],
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+ Padding buildCardInfo(BuildContext context, String selectedCardName,
       String selectedCardNumber) {
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -338,54 +401,67 @@ class Wallet extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Balance",
-                style: context.textTheme.headlineMedium?.copyWith(
-                    color: AppColors.whiteColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: context.dynamicHeight(0.020)),
-              ),
-              SizedBox(height: context.dynamicHeight(0.02)),
-              Consumer<TransactionController>(
-                builder: (context, transactionController, child) {
-                  if (selectedCardNumber !=
-                      transactionController.currentCardNumber) {
-                    transactionController.getBalance(selectedCardNumber);
-                  }
-                  return Text(
-                    '\$ ${transactionController.balance.toStringAsFixed(2)}',
-                    style: context.textTheme.bodyMedium?.copyWith(
+          Flexible(
+            flex: 1,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Balance",
+                  style: context.textTheme.headlineMedium?.copyWith(
                       color: AppColors.whiteColor,
-                      fontSize: context.dynamicHeight(0.02),
-                    ),
-                  );
-                },
-              ),
-            ],
+                      fontWeight: FontWeight.bold,
+                      fontSize: context.dynamicHeight(0.020)),
+                ),
+                SizedBox(height: context.dynamicHeight(0.02)),
+                Consumer<TransactionController>(
+                  builder: (context, transactionController, child) {
+                    if (selectedCardNumber !=
+                        transactionController.currentCardNumber) {
+                      transactionController.getBalance(selectedCardNumber);
+                    }
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal, // Enable horizontal scroll
+                      child: Text(
+                        '\$ ${transactionController.balance.toStringAsFixed(2)}',
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.whiteColor,
+                          fontSize: context.dynamicHeight(0.02),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Card Name",
-                style: context.textTheme.headlineMedium?.copyWith(
-                    color: AppColors.whiteColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: context.dynamicHeight(0.020)),
-              ),
-              SizedBox(height: context.dynamicHeight(0.02)),
-              Text(
-                selectedCardName.isNotEmpty
-                    ? selectedCardName
-                    : 'No Cards Available',
-                style: context.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.whiteColor,
-                    fontSize: context.dynamicHeight(0.020)),
-              ),
-            ],
+          SizedBox(width: context.dynamicWidth(0.05)), // Add some space between columns
+          Flexible(
+            flex: 1,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Card Name",
+                  style: context.textTheme.headlineMedium?.copyWith(
+                      color: AppColors.whiteColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: context.dynamicHeight(0.020)),
+                ),
+                SizedBox(height: context.dynamicHeight(0.02)),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal, // Enable horizontal scroll
+                  child: Text(
+                    selectedCardName.isNotEmpty
+                        ? selectedCardName
+                        : 'No Cards Available',
+                    style: context.textTheme.bodyMedium?.copyWith(
+                        color: AppColors.whiteColor,
+                        fontSize: context.dynamicHeight(0.020)),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
