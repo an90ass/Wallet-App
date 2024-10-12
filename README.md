@@ -10,7 +10,7 @@ A mobile application built using Flutter, Firebase, and Provider to manage cards
   <img src="https://github.com/user-attachments/assets/8a602215-a6d9-49ff-898f-fe18d6b3cff1" width="200" style="border-radius: 15px; margin: 10px;" />
   <img src="https://github.com/user-attachments/assets/0ab7e159-cdc2-4067-82f6-fe7a25a34802" width="200" style="border-radius: 15px; margin: 10px;" />
 </p>
-
+<br>
 <p align="center">
   <img src="https://github.com/user-attachments/assets/8b7fef74-a2d2-48ec-9230-ffc7a731fe47" width="200" style="border-radius: 15px; margin: 10px;" />
   <img src="https://github.com/user-attachments/assets/33e7e9a0-54d1-4f60-aa0b-651a2ca96ae8" width="200" style="border-radius: 15px; margin: 10px;" />
