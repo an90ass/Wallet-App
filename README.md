@@ -87,11 +87,22 @@ A mobile application built using Flutter, Firebase, and Provider to manage cards
    flutter run
 
 ### How to Use
-   1- Add a Card: Navigate to the card management section to add new payment cards.
-   2- Make a Payment: Select a saved card and initiate a payment for services or bills.
-   3- Track Transactions: View detailed transaction history and income logs in the app.
-   4- Local Notifications: Receive notifications directly on your device for payment success, income received, or reminders for upcoming bills.
-   5- Manage Income: Add income sources and track your overall financial health in the income management section
+
+1. **Add a Card**  
+   Navigate to the **Card Management** section to easily add new payment cards by filling out the necessary details. You can also edit or remove existing cards.
+
+2. **Make a Payment**  
+   Select one of the saved cards and initiate a payment for services or bills directly from the app, making the payment process quick and secure.
+
+3. **Track Transactions**  
+   Access the **Transactions** tab to view a detailed history of all your spending and income. Each transaction is categorized and can be filtered by date for better financial oversight.
+
+4. **Receive Notifications**  
+   Stay informed with **Local Notifications** for every payment success, incoming transactions, or reminders for upcoming bills. Notifications are sent directly to your device.
+
+5. **Manage Income**  
+   Head over to the **Income Management** section to add new income sources, track your earnings, and review reports to maintain your financial health with real-time updates.
+
 
 
 
