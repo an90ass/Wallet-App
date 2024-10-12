@@ -86,7 +86,7 @@ A mobile application built using Flutter, Firebase, and Provider to manage cards
    ```bash
    flutter run
 
-### How to Use
+## How to Use
 
 1. **Add a Card**  
    Navigate to the **Card Management** section to easily add new payment cards by filling out the necessary details. You can also edit or remove existing cards.
